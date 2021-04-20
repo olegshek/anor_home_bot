@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  nginx:
+    volumes:
+      - ./docker/nginx/letsencrypt/fullchain.pem:/etc/letsencrypt/live/${PRODUCTION_HOST}/fullchain.pem
+      - ./docker/nginx/letsencrypt/privkey.pem:/etc/letsencrypt/live/${PRODUCTION_HOST}/privkey.pem
+      - ./media:/app/media:ro
+      - ./static:/app/static:ro
+    ports:
+    - 80:80
+    - 443:443
+
+  anor:
+    volumes:
+      - .:/app
+    ports:
+      - 8001:8000
+
+  telegram:
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+
+  celery-worker:
+    volumes:
+      - .:/app
+
+  db:
+    ports:
+      - 5555:5432

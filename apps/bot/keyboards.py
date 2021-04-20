@@ -1,0 +1,169 @@
+from aiogram import types
+
+from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering
+from apps.lead.tortoise_models import Apartment, Store
+
+
+async def get_back_button_obj():
+    return await Button.get(code='back')
+
+
+async def add_back_inline_button(keyboard, locale):
+    back_button_obj = await get_back_button_obj()
+    keyboard.add(
+        types.InlineKeyboardButton(getattr(back_button_obj, f'text_{locale}'), callback_data=back_button_obj.code)
+    )
+    return keyboard
+
+
+async def language_choice(locale='ru', change=False):
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+
+    buttons = []
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='language_choice').order_by(
+            'ordering'):
+        button = await keyboard_button.button
+        code = button.code
+        buttons.append(types.InlineKeyboardButton(
+            button.text_ru if code == 'ru' else button.text_uz if code == 'uz' else button.text_en
+        ))
+
+    if change:
+        back_button_obj = await get_back_button_obj()
+        buttons.append(types.KeyboardButton(getattr(back_button_obj, f'text_{locale}')))
+
+    keyboard.add(*buttons)
+    return keyboard
+
+
+async def phone_number(locale):
+    back_button_obj = await get_back_button_obj()
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='phone_number').order_by('ordering'):
+        button = await keyboard_button.button
+        keyboard.add(types.KeyboardButton(
+            getattr(button, f'text_{locale}'),
+            request_contact=True if button.code == 'phone_number' else None
+        ))
+    keyboard.add(types.KeyboardButton(getattr(back_button_obj, f'text_{locale}')))
+    return keyboard
+
+
+async def main_menu(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='main_menu').order_by('ordering'):
+        button = await keyboard_button.button
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        keyboard.row(tg_button)
+
+    return keyboard
+
+
+async def project_types(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='project_types').order_by('ordering'):
+        button = await keyboard_button.button
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        keyboard.row(tg_button)
+
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def project_choice(project_type, project, locale, is_last=False):
+    button = await Button.get(code='apartment_choice' if project_type == 'residential' else 'store_choice')
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.row(
+        types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{project_type}:{project.pk}')
+    )
+
+    if is_last:
+        await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def project_menu(project_type, locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard_code = 'residential_project_menu' if project_type == 'residential' else 'commercial_project_menu'
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code=keyboard_code).order_by('ordering'):
+        button = await keyboard_button.button
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        keyboard.row(tg_button)
+
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def room_quantity_or_floor_number_choice(project_id, project_type, locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+
+    option_name = 'room_quantity' if project_type == 'residential' else 'floor_number'
+    object_model = Apartment if project_type == 'residential' else Store
+    options = list(set(await object_model.filter(project_id=project_id).values_list(option_name, flat=True)))
+
+    buttons = []
+    for option in options:
+        buttons.append(types.InlineKeyboardButton(
+            str(option),
+            callback_data=str(option)
+        ))
+
+    keyboard.add(*buttons)
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def project_object_menu(project_object_id, locale, added_objects):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    switch_buttons = []
+    for switch, lookups in zip(['◀️', '▶️'], ['lte', 'gte']):
+        switch_buttons.append(types.InlineKeyboardButton(switch, callback_data=f'{project_object_id};{lookups}'))
+
+    keyboard_code = 'project_object' if project_object_id not in added_objects else 'added_project_object'
+
+    keyboard.row(*switch_buttons)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code=keyboard_code).order_by('ordering'):
+        button = await keyboard_button.button
+        code = button.code
+
+        if button.code == 'add_to_cart':
+            code = f'{code};{project_object_id}'
+
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=code)
+        keyboard.row(tg_button)
+
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def back_keyboard(locale):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    button = await get_back_button_obj()
+    keyboard.add(types.KeyboardButton(getattr(button, f'text_{locale}')))
+    return keyboard
+
+
+async def lead_request(apartment_id, locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    lead_button = await Button.get(code='lead_request')
+    keyboard.add(types.InlineKeyboardButton(
+        getattr(lead_button, f'text_{locale}'),
+        callback_data=f'lead_request:{apartment_id}')
+    )
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+remove_keyboard = types.ReplyKeyboardRemove()

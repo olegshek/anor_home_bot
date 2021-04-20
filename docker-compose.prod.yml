@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  db:
+    restart: unless-stopped
+
+  nginx:
+    restart: unless-stopped
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./media:/app/media:ro
+      - ./static:/app/static:ro
+    ports:
+    - 80:80
+    - 443:443
+
+  redis:
+    restart: unless-stopped
+
+  anor:
+    restart: unless-stopped
+    volumes:
+      - .:/app
+
+  telegram:
+    restart: unless-stopped
+    volumes:
+      - .:/app
+
+  celery-worker:
+    restart: unless-stopped
+    volumes:
+      - .:/app

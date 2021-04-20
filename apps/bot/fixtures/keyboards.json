@@ -1,0 +1,30 @@
+[
+  {
+    "model": "bot.keyboard",
+    "pk": 1,
+    "fields": {
+      "code": "phone_number"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 2,
+    "fields": {
+      "code": "main_menu"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 3,
+    "fields": {
+      "code": "language_choice"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 4,
+    "fields": {
+      "code": "project_types"
+    }
+  }
+]

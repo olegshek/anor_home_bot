@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:10.0
+    hostname: genesis
+    env_file:
+      - .env
+
+  redis:
+    image: bitnami/redis:5.0.9
+    hostname: redis
+    env_file:
+      - .env
+    environment:
+      REDIS_PASSWORD: ${REDIS_DEFAULT_PASSWORD}
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    command: /bin/bash -c "envsubst '$$PRODUCTION_HOST' < /etc/nginx/nginx.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+    env_file:
+      - .env
+    depends_on:
+      - anor
+
+  anor:
+    build:
+      context: .
+      dockerfile: docker/anor/Dockerfile
+    hostname: genesis
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: gunicorn -c docker/anor/gunicorn.conf.py --log-level=${DJANGO_LOGLEVEL} --name anor --max-requests=1000 --access-logfile - --error-logfile - --bind=0.0.0.0:8000 config.wsgi:application
+
+  telegram:
+    build:
+      context: .
+      dockerfile: docker/anor/Dockerfile
+    hostname: telegram
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: gunicorn -c docker/anor/gunicorn.conf.py --log-level=debug --name "telegram_gunicorn" --error-logfile - --access-logfile - --worker-class aiohttp.GunicornWebWorker --bind=0.0.0.0:8000 config.telegram_wsgi:web_app
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: docker/anor/Dockerfile
+    env_file:
+      - .env
+    command: /bin/bash -c "celery worker -A config --loglevel ${CELERY_WORKER_LOGLEVEL}"
+    depends_on:
+      - anor
