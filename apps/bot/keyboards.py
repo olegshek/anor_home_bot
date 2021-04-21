@@ -121,11 +121,11 @@ async def room_quantity_or_floor_number_choice(project_id, project_type, locale)
     return keyboard
 
 
-async def project_object_menu(project_object_id, locale, added_objects):
+async def project_object_menu(project_object_id, locale, added_objects, projects_quantity, project_number):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
     switch_buttons = []
-    for switch, lookups in zip(['◀️', '▶️'], ['lte', 'gte']):
+    for switch, lookups in zip(['◀️', f'{project_number}/{projects_quantity}', '▶️'], ['lte', 'ignore', 'gte']):
         switch_buttons.append(types.InlineKeyboardButton(switch, callback_data=f'{project_object_id};{lookups}'))
 
     keyboard_code = 'project_object' if project_object_id not in added_objects else 'added_project_object'
@@ -138,6 +138,30 @@ async def project_object_menu(project_object_id, locale, added_objects):
 
         if button.code == 'add_to_cart':
             code = f'{code};{project_object_id}'
+
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=code)
+        keyboard.row(tg_button)
+
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def cart_menu(transaction_id, locale, transactions_quantity, transaction_number):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    switch_buttons = []
+    for switch, lookups in zip(['◀️', f'{transaction_number}/{transactions_quantity}', '▶️'], ['lte', 'ignore', 'gte']):
+        switch_buttons.append(types.InlineKeyboardButton(switch, callback_data=f'{transaction_id};{lookups}'))
+
+    keyboard.row(*switch_buttons)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='cart_menu').order_by('ordering'):
+        button = await keyboard_button.button
+        code = button.code
+
+        if button.code == 'remove_from_cart':
+            code = f'{code};{transaction_id}'
 
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=code)
         keyboard.row(tg_button)

@@ -5,7 +5,8 @@ from apps.bot.messages import get_message
 from apps.bot.utils import try_delete_message
 from apps.lead import callback_filters
 from apps.lead.states import LeadForm
-from apps.lead.tortoise_models import CommercialProject, ResidentialProject, Apartment, Store
+from apps.lead.tortoise_models import CommercialProject, ResidentialProject, Apartment, Store, ApartmentTransaction, \
+    StoreTransaction
 from core.callback_filters import is_digit
 
 
@@ -77,10 +78,15 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
         room_quantity_or_floor_number = data['room_quantity_or_floor_number']
         project_id = data['project_id']
         project_type = data['project_type']
-        added_objects = data.get('apartments', []) if project_type == 'residential' else data.get('stores', [])
 
     object_model = Apartment if project_type == 'residential' else Store
     number_field_name = 'room_quantity' if project_type == 'residential' else 'floor_number'
+
+    transaction_model = ApartmentTransaction if project_type == 'residential' else StoreTransaction
+    transaction__object_field_name = 'apartment_id' if project_type == 'residential' else 'store_id'
+
+    added_objects = await transaction_model.filter(lead_id__isnull=True).values_list(transaction__object_field_name,
+                                                                                     flat=True)
 
     project_object = await object_model.filter(
         project__id=project_id,
@@ -102,9 +108,13 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     if not project_object:
         return
 
+    project_ids = list(await object_model.all().order_by('square').values_list('id', flat=True))
+    project_number = project_ids.index(project_object.id) + 1
+    projects_quantity = len(project_ids)
     message = f'<b>{project_object.square}m</b>\n\n' \
               f'{getattr(project_object, f"description_{locale}")}'
-    keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects)
+    keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects, projects_quantity,
+                                                   project_number)
     photos = await project_object.photos
     media_group = types.MediaGroup()
 
@@ -175,6 +185,3 @@ async def switch_project_object(query, state, locale):
     lookups = data[1]
 
     await send_project_object(user_id, query.message.message_id, locale, state, object_id, lookups)
-
-
-

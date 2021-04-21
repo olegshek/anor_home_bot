@@ -1,4 +1,4 @@
-from apps.bot.tortoise_models import Button
+from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering
 from apps.lead.tortoise_models import ResidentialProject, CommercialProject
 from core.filters import callback_filter
 
@@ -44,3 +44,8 @@ def add_to_cart(query):
 
 def cart(query):
     return query.data == 'cart'
+
+
+def cart_menu(query):
+    code = query.data.split(';')[0]
+    return code in ['remove_from_cart', 'consultation_request', 'continue_review']
