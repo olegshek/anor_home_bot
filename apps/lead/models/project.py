@@ -29,8 +29,8 @@ class ResidentialProject(Project):
     location = models.OneToOneField(Location, on_delete=models.SET_NULL, null=True, related_name='residential_project',
                                     verbose_name=_('Location'))
 
-    catalog_documents = models.ManyToManyField(Document, related_name='document_residential_projects',
-                                               verbose_name=_('Catalog documents'))
+    catalogue_documents = models.ManyToManyField(Document, related_name='catalogue_residential_projects',
+                                                 verbose_name=_('Catalog documents'))
 
 
 class CommercialProject(Project):
@@ -43,8 +43,8 @@ class CommercialProject(Project):
     location = models.OneToOneField(Location, on_delete=models.SET_NULL, null=True, related_name='commercial_project',
                                     verbose_name=_('Location'))
 
-    catalog_documents = models.ManyToManyField(Document, related_name='document_commercial_projects',
-                                               verbose_name=_('Catalog documents'))
+    catalogue_documents = models.ManyToManyField(Document, related_name='catalogue_commercial_projects',
+                                                 verbose_name=_('Catalog documents'))
 
 
 class Apartment(models.Model):

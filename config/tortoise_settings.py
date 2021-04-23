@@ -4,6 +4,7 @@ from tortoise import Tortoise
 from apps.bot import app_name as bot_name
 from apps.file import app_name as file_name
 from apps.lead import app_name as lead_name
+from apps.contact import app_name as contact_name
 
 
 async def init():
@@ -12,7 +13,8 @@ async def init():
         modules={
             f'{bot_name}': ['apps.bot.tortoise_models'],
             f'{file_name}': ['apps.file.tortoise_models'],
-            f'{lead_name}': ['apps.lead.tortoise_models']
+            f'{lead_name}': ['apps.lead.tortoise_models'],
+            f'{contact_name}': ['apps.contact.tortoise_models']
         }
     )
 

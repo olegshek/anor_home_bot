@@ -74,14 +74,16 @@ async def project_types(locale):
     return keyboard
 
 
-async def project_choice(project_type, project, locale, is_last=False):
-    button = await Button.get(code='apartment_choice' if project_type == 'residential' else 'store_choice')
+async def project_choice(project, locale, is_last=False):
+    button = await Button.get(code='choose')
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     keyboard.row(
-        types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{project_type}:{project.pk}')
+        types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{button.code}:{project.pk}')
     )
 
     if is_last:
+        cart_button = await Button.get(code='cart')
+        keyboard.add(types.InlineKeyboardButton(getattr(cart_button, f'text_{locale}'), callback_data=cart_button.code))
         await add_back_inline_button(keyboard, locale)
 
     return keyboard
@@ -167,6 +169,30 @@ async def cart_menu(transaction_id, locale, transactions_quantity, transaction_n
         keyboard.row(tg_button)
 
     await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def confirmation(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    confirm_button = await Button.get(code='confirm')
+    keyboard.add(
+        types.InlineKeyboardButton(getattr(confirm_button, f'text_{locale}'), callback_data=confirm_button.code)
+    )
+
+    await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def anorhome_menu(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='anorhome_menu').order_by('ordering'):
+        button = await keyboard_button.button
+        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        keyboard.row(tg_button)
 
     return keyboard
 

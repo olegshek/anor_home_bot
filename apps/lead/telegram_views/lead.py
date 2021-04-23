@@ -1,11 +1,12 @@
 from aiogram import types
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages
+from apps.bot.telegram_views import send_main_menu
 from apps.bot.utils import try_delete_message
 from apps.lead import callback_filters
 from apps.lead.states import LeadForm
 from apps.lead.telegram_views.project import send_project_object, send_project_choice
-from apps.lead.tortoise_models import ApartmentTransaction, StoreTransaction
+from apps.lead.tortoise_models import ApartmentTransaction, StoreTransaction, Lead, Customer
 
 
 async def remove_all_transactions(user_id):
@@ -42,8 +43,10 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
         if state_name == LeadForm.project_object_choice.state:
             return await send_project_object(user_id, message_id, locale, state)
 
-        if state_name == LeadForm.cart.state:
+        if state_name in [LeadForm.cart.state, LeadForm.project_choice.state]:
             return await send_project_choice(user_id, message_id, locale, project_type)
+
+        return
 
     transaction_ids = list(
         await transaction_model.filter(customer_id=user_id).order_by('created_at').values_list('id', flat=True)
@@ -129,3 +132,40 @@ async def process_cart_menu(query, locale, state):
 
     if 'consultation_request' in query.data:
         transactions = await transaction_model.filter(customer_id=user_id, lead_id__isnull=True)
+
+        message = ''
+        for transaction in transactions:
+            project_model = 'apartment' if project_type == 'residential' else 'store'
+            project_object = await getattr(transaction, project_model)
+            project = await project_object.project
+
+            room_quantity_message = await messages.get_message('room_quantity_info', locale)
+
+            message += f'<b>{project.name}\n' \
+                       f'{room_quantity_message} {project_object.room_quantity}\n' \
+                       f'{project_object.square}m</b>\n\n'
+
+        keyboard = await keyboards.confirmation(locale)
+
+        await LeadForm.lead_confirmation.set()
+        await try_delete_message(user_id, message_id)
+        await bot.send_message(user_id, message, reply_markup=keyboard, parse_mode='HTML')
+
+
+@dp.callback_query_handler(callback_filters.confirm_button, state=LeadForm.lead_confirmation.state)
+async def confirm_lead(query, locale, state):
+    user_id = query.from_user.id
+
+    async with state.proxy() as data:
+        project_type = data['project_type']
+
+    transaction_model = ApartmentTransaction if project_type == 'residential' else StoreTransaction
+
+    lead = await Lead.create(customer_id=user_id)
+    await transaction_model.filter(customer_id=user_id, lead_id__isnull=True).update(lead_id=lead.id)
+
+    message = messages.get_message('request_accepted', locale)
+    await bot.edit_message_text(message, user_id, query.message.message_id)
+
+    customer = await Customer.get(id=user_id)
+    await send_main_menu(customer, locale, state)

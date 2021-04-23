@@ -1,6 +1,5 @@
 from modeltranslation import translator
 
-from apps.bot.models import Button, Message
 from apps.file.models import Photo, Video, Document
 from core.translation import TranslationOptionsMixin
 

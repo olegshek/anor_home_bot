@@ -14,18 +14,14 @@ async def project_type(query):
     return query.data in ['residential', 'commercial']
 
 
-async def residence_choice(query):
+def choose_button(query):
     data = query.data
     data = data.split(':')
-    project_variant = 'residential' if 'residential' in data else 'commercial' if 'commercial' in data else False
 
-    if not project_variant:
-        return False
+    if 'choose' in data:
+        return True
 
-    project_model = ResidentialProject if project_variant == 'residential' else CommercialProject
-    projects_ids = await project_model.all().values_list('id', flat=True)
-
-    return len(data) > 1 and int(data[1]) in projects_ids
+    return False
 
 
 async def project_menu(query):
@@ -49,3 +45,10 @@ def cart(query):
 def cart_menu(query):
     code = query.data.split(';')[0]
     return code in ['remove_from_cart', 'consultation_request', 'continue_review']
+
+
+def confirm_button(query):
+    if 'confirm' in query.data:
+        return True
+
+    return False

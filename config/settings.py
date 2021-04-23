@@ -84,6 +84,7 @@ INSTALLED_APPS = [
 
     'core',
     'apps.bot',
+    'apps.contact',
     'apps.file',
     'apps.lead'
 ]

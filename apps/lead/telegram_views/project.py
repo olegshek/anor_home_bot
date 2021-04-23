@@ -25,7 +25,7 @@ async def send_project_choice(user_id, message_id, locale, project_type):
 
     for project in projects:
         is_last = True if projects.index(project) == projects_len - 1 else False
-        keyboard = await keyboards.project_choice(project_type, project, locale, is_last)
+        keyboard = await keyboards.project_choice(project, locale, is_last)
         photo = await project.main_photo
         text = get_project_message(project, locale)
 
@@ -140,8 +140,8 @@ async def choose_project_type(query, locale, state):
     await send_project_choice(query.from_user.id, query.message.message_id, locale, project_type)
 
 
-@dp.callback_query_handler(callback_filters.residence_choice, state=LeadForm.project_choice.state)
-async def residence_choice(query, state, locale):
+@dp.callback_query_handler(callback_filters.choose_button, state=LeadForm.project_choice.state)
+async def project_choice(query, state, locale):
     user_id = query.from_user.id
     project_id = int(query.data.split(':')[1])
 
@@ -162,8 +162,59 @@ async def process_project_menu(query, state, locale):
         project_id = data['project_id']
         project_type = data['project_type']
 
+    project_model = ResidentialProject if project_type == 'residential' else CommercialProject
+    project = await project_model.get(id=project_id)
+
     if code in ['apartment_choice', 'store_choice']:
         await send_room_quantity_or_floor_number(user_id, message_id, locale, project_id, project_type)
+
+    if code == 'about_project':
+        description = getattr(project, f'description_{locale}')
+        photos = await project.photos.all()
+        documents = await project.documents.all()
+        location = await project.location
+
+        await bot.send_message(user_id, description, reply_markup=keyboards.back_keyboard(locale))
+
+        for photo in photos:
+            with open(photo.get_path(), 'rb') as photo_data:
+                await bot.send_photo(
+                    user_id,
+                    photo_data,
+                    caption=getattr(photo, f'description_{locale}'),
+                    parse_mode='HTML'
+                )
+
+        for document in documents:
+            with open(document.get_path(), 'rb') as document_data:
+                await bot.send_document(
+                    user_id,
+                    photo_data,
+                    caption=getattr(document_data, f'description_{locale}'),
+                    parse_mode='HTML'
+                )
+
+        if location.latitude and location.longitude:
+            location_message = await bot.send_location(user_id, location.latitude, location.longitude)
+            await bot.send_message(user_id, getattr(location, f'description_{locale}'),
+                                   reply_to_message_id=location_message.message_id)
+
+        await LeadForm.about_project.set()
+
+    if code == 'download_catalogue':
+        documents = await project.catalogue_documents.all()
+
+        for document in documents:
+            with open(document.get_path(), 'rb') as document_data:
+                await bot.send_document(
+                    user_id,
+                    photo_data,
+                    caption=getattr(document_data, f'description_{locale}'),
+                    parse_mode='HTML',
+                    reply_markup=keyboards.back_keyboard(locale)
+                )
+
+        await LeadForm.catalogue.set()
 
 
 @dp.callback_query_handler(is_digit, state=LeadForm.room_quantity_or_floor_number_choice.state)

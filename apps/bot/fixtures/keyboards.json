@@ -26,5 +26,47 @@
     "fields": {
       "code": "project_types"
     }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 5,
+    "fields": {
+      "code": "residential_project_menu"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 6,
+    "fields": {
+      "code": "commercial_project_menu"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 7,
+    "fields": {
+      "code": "project_object"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 8,
+    "fields": {
+      "code": "added_project_object"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 9,
+    "fields": {
+      "code": "cart_menu"
+    }
+  },
+  {
+    "model": "bot.keyboard",
+    "pk": 10,
+    "fields": {
+      "code": "anorhome_menu"
+    }
   }
 ]

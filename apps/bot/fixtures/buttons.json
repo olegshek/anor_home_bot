@@ -174,5 +174,148 @@
       "text_uz": "CHOOSE A STORE",
       "text_en": "CHOOSE A STORE"
     }
+  },
+  {
+    "model": "bot.button",
+    "pk": 17,
+    "fields": {
+      "code": "about_project",
+      "text": "ABOUT THE PROJECT",
+      "text_ru": "О ПРОЕКТЕ",
+      "text_uz": "ABOUT THE PROJECT",
+      "text_en": "ABOUT THE PROJECT"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 18,
+    "fields": {
+      "code": "download_catalogue",
+      "text": "DOWNLOAD THE CATALOGUE",
+      "text_ru": "СКАЧАТЬ КАТАЛОГ",
+      "text_uz": "DOWNLOAD THE CATALOGUE",
+      "text_en": "DOWNLOAD THE CATALOGUE"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 19,
+    "fields": {
+      "code": "add_to_cart",
+      "text": "ADD TO CART",
+      "text_ru": "ДОБАВИТЬ В КОРЗИНУ",
+      "text_uz": "ADD TO CART",
+      "text_en": "ADD TO CART"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 20,
+    "fields": {
+      "code": "cart",
+      "text": "CART",
+      "text_ru": "КОРЗИНА",
+      "text_uz": "CART",
+      "text_en": "CART"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 22,
+    "fields": {
+      "code": "added_to_cart",
+      "text": "ADDED TO CART",
+      "text_ru": "ДОБАВЛЕННО В КОРЗИНУ",
+      "text_uz": "ADDED TO CART",
+      "text_en": "ADDED TO CART"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 23,
+    "fields": {
+      "code": "continue_review",
+      "text": "CONTINUE REVIEW",
+      "text_ru": "ПРОДОЛЖИТЬ ОБЗОР",
+      "text_uz": "CONTINUE REVIEW",
+      "text_en": "CONTINUE REVIEW"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 24,
+    "fields": {
+      "code": "consultation_request",
+      "text": "APPLY FOR A CONSULTATION",
+      "text_ru": "ПОДАТЬ ЗАЯВКУ НА КОНСУЛЬТАЦИЮ",
+      "text_uz": "APPLY FOR A CONSULTATION",
+      "text_en": "APPLY FOR A CONSULTATION"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 25,
+    "fields": {
+      "code": "remove_from_cart",
+      "text": "❌ REMOVE FROM THE CART",
+      "text_ru": "❌ УДАЛИТЬ ИЗ КОРЗИНЫ",
+      "text_uz": "❌ REMOVE FROM THE CART",
+      "text_en": "❌ REMOVE FROM THE CART"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 26,
+    "fields": {
+      "code": "confirm",
+      "text": "CONFIRM",
+      "text_ru": "ПОДТВЕРДИТЬ",
+      "text_uz": "CONFIRM",
+      "text_en": "CONFIRM"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 27,
+    "fields": {
+      "code": "choose",
+      "text": "CHOOSE",
+      "text_ru": "ВЫБРАТЬ",
+      "text_uz": "CHOOSE",
+      "text_en": "CHOOSE"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 60,
+    "fields": {
+      "code": "about_company",
+      "text": "ABOUT COMPANY",
+      "text_ru": "О КОМПАНИИ",
+      "text_uz": "ABOUT COMPANY",
+      "text_en": "ABOUT COMPANY"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 61,
+    "fields": {
+      "code": "corporate_customer",
+      "text": "ДЛЯ КОРПОРАТИВНЫХ КЛИЕНТОВ",
+      "text_ru": "ДЛЯ КОРПОРАТИВНЫХ КЛИЕНТОВ",
+      "text_uz": "ДЛЯ КОРПОРАТИВНЫХ КЛИЕНТОВ",
+      "text_en": "ДЛЯ КОРПОРАТИВНЫХ КЛИЕНТОВ"
+    }
+  },
+  {
+    "model": "bot.button",
+    "pk": 62,
+    "fields": {
+      "code": "vacancies",
+      "text": "VACANCIES",
+      "text_ru": "ВАКАНСИИ",
+      "text_uz": "VACANCIES",
+      "text_en": "VACANCIES"
+    }
   }
 ]

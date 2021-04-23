@@ -141,5 +141,49 @@
       "text_uz": "Choose a project",
       "text_en": "Choose a project"
     }
+  },
+  {
+    "model": "bot.message",
+    "pk": 28,
+    "fields": {
+      "code": "floor_number",
+      "text": "Choose the floor number",
+      "text_ru": "Выберите этаж",
+      "text_uz": "Choose the floor number",
+      "text_en": "Choose the floor number"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 29,
+    "fields": {
+      "code": "room_quantity_info",
+      "text": "Room quantity:",
+      "text_ru": "Количество комнат:",
+      "text_uz": "Room quantity:",
+      "text_en": "Room quantity:"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 30,
+    "fields": {
+      "code": "empty_cart",
+      "text": "Your cart is empty",
+      "text_ru": "Выша корзина пуста",
+      "text_uz": "Your cart is empty",
+      "text_en": "Your cart is empty"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 64,
+    "fields": {
+      "code": "anorhome_menu",
+      "text": "Anorhome menu",
+      "text_ru": "Вы находитесь в меню Anorhome",
+      "text_uz": "Anorhome menu",
+      "text_en": "Anorhome menu"
+    }
   }
 ]

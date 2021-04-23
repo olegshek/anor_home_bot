@@ -8,13 +8,8 @@ from core.utils import generate_number
 class Lead(models.Model):
     number = fields.IntField(default=generate_number)
     customer = fields.ForeignKeyField(f'{app_name}.Customer', on_delete=fields.CASCADE, related_name='leads')
-    apartments = fields.ManyToManyField(f'{app_name}.Apartment', related_name='leads', through='lead_lead_apartments',
-                                        backward_key='lead_id')
-    stores = fields.ManyToManyField(f'{app_name}.Store', related_name='leads', through='lead_lead_stores',
-                                    backward_key='lead_id')
 
     created_at = fields.DatetimeField(default=timezone.now, blank=True, editable=False)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = f'{app_name}_lead'

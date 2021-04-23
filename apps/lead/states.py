@@ -15,3 +15,6 @@ class LeadForm(StatesGroup):
     square_choice = State()
     project_object_choice = State()
     cart = State()
+    lead_confirmation = State()
+    about_project = State()
+    catalogue = State()
