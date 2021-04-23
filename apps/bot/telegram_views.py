@@ -3,6 +3,8 @@ from aiogram import types
 from apps.bot import dispatcher as dp, messages, bot, keyboards
 from apps.bot.states import BotForm
 from apps.bot.utils import try_delete_message
+from apps.company.states import CompanyForm
+from apps.company.tortoise_models import CompanyPhoto, CompanyText, CompanyDocument
 from apps.contact.tortoise_models import ContactText, ContactPhoto, ContactLocation
 from apps.lead.states import CustomerForm, LeadForm
 from apps.lead.tortoise_models import Customer
@@ -106,5 +108,5 @@ async def main_menu(query, locale, state):
         message = await messages.get_message('anorhome_menu', locale)
         keyboard = await keyboards.anorhome_menu(locale)
 
-        await BotForm.anorhome_menu.set()
+        await CompanyForm.menu.set()
         await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)

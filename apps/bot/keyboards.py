@@ -197,6 +197,31 @@ async def anorhome_menu(locale):
     return keyboard
 
 
+async def services_or_vacancies(service_or_vacancy, locale, is_last=False):
+    button = await Button.get(code='choose')
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.row(
+        types.InlineKeyboardButton(getattr(button, f'text_{locale}'),
+                                   callback_data=f'{button.code}:{service_or_vacancy.pk}')
+    )
+
+    if is_last:
+        await add_back_inline_button(keyboard, locale)
+
+    return keyboard
+
+
+async def apply(object_id, locale):
+    button = await Button.get(code='apply')
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.row(
+        types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{button.code}:{object_id}')
+    )
+
+    await add_back_inline_button(keyboard, locale)
+    return keyboard
+
+
 async def back_keyboard(locale):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button = await get_back_button_obj()

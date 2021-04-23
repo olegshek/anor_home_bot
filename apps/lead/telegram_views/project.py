@@ -20,7 +20,7 @@ async def send_project_choice(user_id, message_id, locale, project_type):
     await try_delete_message(user_id, message_id)
 
     project_model = CommercialProject if project_type == 'commercial' else ResidentialProject
-    projects = await project_model.all().order_by(f'name')
+    projects = await project_model.all().order_by('name')
     projects_len = len(projects)
 
     for project in projects:

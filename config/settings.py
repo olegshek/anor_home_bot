@@ -86,7 +86,8 @@ INSTALLED_APPS = [
     'apps.bot',
     'apps.contact',
     'apps.file',
-    'apps.lead'
+    'apps.lead',
+    'apps.company'
 ]
 
 MIDDLEWARE = [
