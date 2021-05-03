@@ -4,8 +4,8 @@ from apps.lead import app_name
 
 
 class Location(models.Model):
-    latitude = fields.FloatField()
-    longitude = fields.FloatField()
+    latitude = fields.FloatField(null=True)
+    longitude = fields.FloatField(null=True)
     description_ru = fields.CharField(max_length=4000)
     description_uz = fields.CharField(max_length=4000)
     description_en = fields.CharField(max_length=4000)
@@ -28,16 +28,17 @@ class ResidentialProject(Project):
     main_photo = fields.ForeignKeyField('file.Photo', on_delete=fields.SET_NULL, null=True,
                                         related_name='residential_projects_main')
     photos = fields.ManyToManyField('file.Photo', related_name='residential_projects',
-                                    through='lead_residentialproject_photos')
-    videos = fields.ManyToManyField('file.Video', related_name='residential_projects',
-                                    through='lead_residentialproject_videos')
+                                    through='lead_residentialproject_photos',
+                                    backward_key='residentialproject_id')
     documents = fields.ManyToManyField('file.Document', related_name='residential_projects',
-                                       through='lead_residentialproject_documents')
+                                       through='lead_residentialproject_documents',
+                                       backward_key='residentialproject_id')
     location = fields.OneToOneField(f'{app_name}.Location', on_delete=fields.SET_NULL, null=True,
                                     related_name='residential_project')
     catalogue_documents = fields.ManyToManyField(f'file.Document',
                                                  related_name='catalogue_residential_projects',
-                                                 through='lead_residentialproject_catalog_documents')
+                                                 through='lead_residentialproject_catalogue_documents',
+                                                 backward_key='residentialproject_id')
 
     class Meta:
         table = f'{app_name}_residentialproject'
@@ -47,29 +48,43 @@ class CommercialProject(Project):
     main_photo = fields.ForeignKeyField('file.Photo', on_delete=fields.SET_NULL, null=True,
                                         related_name='residential_commercial_main')
     photos = fields.ManyToManyField('file.Photo', related_name='commercial_projects',
-                                    through='lead_commercialproject_photos')
-    videos = fields.ManyToManyField('file.Video', related_name='commercial_projects',
-                                    through='lead_commercialproject_videos')
+                                    through='lead_commercialproject_photos',
+                                    backward_key='commercialproject_id')
     documents = fields.ManyToManyField('file.Document', related_name='commercial_projects',
-                                       through='lead_commercialproject_documents')
+                                       through='lead_commercialproject_documents',
+                                       backward_key='commercialproject_id')
     location = fields.OneToOneField(f'{app_name}.Location', on_delete=fields.SET_NULL, null=True,
                                     related_name='commercial_project')
     catalogue_documents = fields.ManyToManyField(f'file.Document',
                                                  related_name='catalogue_commercial_projects',
-                                                 through='lead_commercialproject_catalog_documents')
+                                                 through='lead_commercialproject_catalogue_documents',
+                                                 backward_key='commercialproject_id')
 
     class Meta:
         table = f'{app_name}_commercialproject'
 
 
+class Duplex(models.Model):
+    project = fields.ForeignKeyField(f'{app_name}.ResidentialProject', on_delete=fields.CASCADE,
+                                     related_name='duplexes')
+    room_quantity = fields.IntField()
+
+    class Meta:
+        table = f'{app_name}_duplex'
+
+
 class Apartment(models.Model):
     project = fields.ForeignKeyField(f'{app_name}.ResidentialProject', on_delete=fields.CASCADE,
                                      related_name='apartments')
-    room_quantity = fields.IntField()
+    duplex = fields.ForeignKeyField(f'{app_name}.Duplex', on_delete=fields.SET_NULL, null=True,
+                                    related_name='apartments')
+    room_quantity = fields.IntField(null=True)
     square = fields.FloatField()
     description_ru = fields.CharField(max_length=198)
     description_en = fields.CharField(max_length=198)
     description_uz = fields.CharField(max_length=198)
+
+    floor_number = fields.IntField(null=True)
 
     photos = fields.ManyToManyField('file.Photo', related_name='apartments', through='lead_apartment_photos',
                                     backward_key='apartment_id')

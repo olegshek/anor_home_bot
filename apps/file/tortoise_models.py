@@ -30,13 +30,3 @@ class Document(File):
 
     def get_path(self):
         return f"media/{self.document}"
-
-
-class Video(File):
-    video = fields.TextField()
-
-    class Meta:
-        table = f'{app_name}_video'
-
-    def get_path(self):
-        return f"media/{self.video}"

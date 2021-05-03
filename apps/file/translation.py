@@ -1,16 +1,11 @@
 from modeltranslation import translator
 
-from apps.file.models import Photo, Video, Document
+from apps.file.models import Photo, Document
 from core.translation import TranslationOptionsMixin
 
 
 @translator.register(Photo)
 class PhotoOptions(TranslationOptionsMixin):
-    fields = ('description', )
-
-
-@translator.register(Video)
-class VideoOptions(TranslationOptionsMixin):
     fields = ('description', )
 
 

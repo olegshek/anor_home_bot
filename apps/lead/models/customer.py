@@ -18,7 +18,10 @@ class Customer(models.Model):
         verbose_name_plural = _('Customers')
 
     def __str__(self):
-        return self.full_name if self.full_name else self.phone_number if self.phone_number else self.id
+        ret = self.full_name if self.full_name else str(self.id)
+        if self.phone_number:
+            ret += f' {self.phone_number}'
+        return ret
 
 
 class Feedback(models.Model):

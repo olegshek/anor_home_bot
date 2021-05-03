@@ -7,3 +7,5 @@ class CompanyForm(StatesGroup):
     services = State()
     vacancies = State()
     service_detail = State()
+    vacancy_detail = State()
+    cv = State()

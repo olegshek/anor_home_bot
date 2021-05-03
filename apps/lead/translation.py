@@ -2,7 +2,7 @@ from modeltranslation import translator
 
 
 from apps.lead.models import ResidentialProject, CommercialProject
-from apps.lead.models.project import Location, Apartment, Store
+from apps.lead.models.project import Location, Apartment, Store, Duplex
 from core.translation import TranslationOptionsMixin
 
 

@@ -1,15 +1,16 @@
 from aiogram import types
 
-from apps.bot import dispatcher as dp, messages, bot, keyboards
+from apps.bot import callback_filters
+from apps.bot import dispatcher as dp, messages, bot
+from apps.bot import keyboards
+from apps.bot.callback_filters import keyboard_back, inline_back
 from apps.bot.states import BotForm
 from apps.bot.utils import try_delete_message
 from apps.company.states import CompanyForm
-from apps.company.tortoise_models import CompanyPhoto, CompanyText, CompanyDocument
+from apps.company.tortoise_models import Vacancy, Service
 from apps.contact.tortoise_models import ContactText, ContactPhoto, ContactLocation
 from apps.lead.states import CustomerForm, LeadForm
 from apps.lead.tortoise_models import Customer
-from apps.bot import callback_filters
-from apps.bot import keyboards
 
 
 async def send_main_menu(customer, locale, state=None):
@@ -41,6 +42,114 @@ async def send_main_menu(customer, locale, state=None):
         )
 
 
+async def back(user_id, state, locale, message_id=None):
+    state_name = await state.get_state()
+    customer = await Customer.get(id=user_id)
+
+    if state_name in [
+        CompanyForm.menu.state,
+        LeadForm.project_type.state,
+        CustomerForm.language_choice.state,
+        BotForm.contacts.state
+    ]:
+        if message_id:
+            await try_delete_message(user_id, message_id)
+
+        return await send_main_menu(customer, locale, state)
+
+    if state_name == LeadForm.project_choice.state:
+        await try_delete_message(user_id, message_id)
+        keyboard = await keyboards.project_types(locale)
+        message = await messages.get_message('project_type', locale)
+        await LeadForm.project_type.set()
+        return await bot.send_message(user_id, message, reply_markup=keyboard)
+
+    if state_name in [LeadForm.project_menu.state, LeadForm.cart.state]:
+        from apps.lead.telegram_views.project import send_project_choice
+
+        async with state.proxy() as data:
+            project_type = data['project_type']
+
+        await try_delete_message(user_id, message_id)
+        return await send_project_choice(user_id, message_id, locale, project_type)
+
+    if state_name in [
+        LeadForm.room_quantity_or_floor_number_choice.state,
+        LeadForm.catalogue.state,
+        LeadForm.about_project.state
+    ]:
+        from apps.lead.telegram_views.project import send_project_menu
+
+        async with state.proxy() as data:
+            project_type = data['project_type']
+            project_id = data['project_id']
+
+        if message_id:
+            await try_delete_message(user_id, message_id)
+
+        return await send_project_menu(user_id, message_id, locale, project_type, project_id)
+
+    if state_name == LeadForm.project_object_choice.state:
+        from apps.lead.telegram_views.project import send_room_quantity_or_floor_number
+
+        async with state.proxy() as data:
+            project_type = data['project_type']
+            project_id = data['project_id']
+
+        return await send_room_quantity_or_floor_number(user_id, message_id, locale, project_id, project_type)
+
+    if state_name == LeadForm.lead_confirmation.state:
+        from apps.lead.telegram_views.lead import send_cart_menu
+        return await send_cart_menu(user_id, message_id, locale, state)
+
+    if state_name in [CompanyForm.about.state, CompanyForm.vacancies.state, CompanyForm.services.state]:
+        message = await messages.get_message('anorhome_menu', locale)
+        keyboard = await keyboards.anorhome_menu(locale)
+
+        await CompanyForm.menu.set()
+        return await bot.send_message(user_id, message, reply_markup=keyboard)
+
+    if state_name == CompanyForm.vacancy_detail.state:
+        vacancies = await Vacancy.all()
+        vacancies_len = len(vacancies)
+
+        for vacancy in vacancies:
+            is_last = True if vacancies.index(vacancy) == vacancies_len - 1 else False
+            photo = await vacancy.photo
+            keyboard = await keyboards.services_or_vacancies(vacancy, locale, is_last)
+
+            with open(photo.get_path(), 'rb') as photo_data:
+                await bot.send_photo(
+                    user_id,
+                    photo_data,
+                    caption=getattr(vacancy, f'name_{locale}'),
+                    parse_mode='HTML',
+                    reply_markup=keyboard
+                )
+
+        return await CompanyForm.vacancies.set()
+
+    if state_name == CompanyForm.service_detail.state:
+        services = await Service.all()
+        services_len = len(services)
+
+        for service in services:
+            is_last = True if services.index(service) == services_len - 1 else False
+            photo = await service.photo
+            keyboard = await keyboards.services_or_vacancies(service, locale, is_last)
+
+            with open(photo.get_path(), 'rb') as photo_data:
+                await bot.send_photo(
+                    user_id,
+                    photo_data,
+                    caption=getattr(service, f'name_{locale}'),
+                    parse_mode='HTML',
+                    reply_markup=keyboard
+                )
+
+        return await CompanyForm.services.set()
+
+
 @dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message, locale):
     user_id = message.from_user.id
@@ -64,7 +173,6 @@ async def main_menu(query, locale, state):
     user_id = query.from_user.id
     data = query.data
     message_id = query.message.message_id
-    customer = await Customer.get(id=user_id)
 
     if data == 'projects':
         keyboard = await keyboards.project_types(locale)
@@ -85,7 +193,7 @@ async def main_menu(query, locale, state):
         contact_location = await (await ContactLocation.first()).location
 
         await bot.send_message(user_id, getattr(contact_text, f'text_{locale}'),
-                               reply_markup=keyboards.back_keyboard(locale))
+                               reply_markup=await keyboards.back_keyboard(locale))
 
         for contact_photo in contact_photos:
             photo = await contact_photo.photo
@@ -97,7 +205,7 @@ async def main_menu(query, locale, state):
                     parse_mode='HTML'
                 )
 
-        if contact_location.latitude and contact_location.longitude:
+        if contact_location and contact_location.latitude and contact_location.longitude:
             location_message = await bot.send_location(user_id, contact_location.latitude, contact_location.longitude)
             await bot.send_message(user_id, getattr(contact_location, f'description_{locale}'),
                                    reply_to_message_id=location_message.message_id)
@@ -110,3 +218,16 @@ async def main_menu(query, locale, state):
 
         await CompanyForm.menu.set()
         await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
+
+
+@dp.message_handler(keyboard_back, state='*')
+async def button_back(message, state, locale):
+    user_id = message.from_user.id
+
+    await bot.send_message(user_id, '🔙', reply_markup=keyboards.remove_keyboard)
+    await back(message.from_user.id, state, locale)
+
+
+@dp.callback_query_handler(inline_back, state='*')
+async def back_inline(query, state, locale):
+    await back(query.from_user.id, state, locale, query.message.message_id)

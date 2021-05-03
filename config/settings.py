@@ -86,7 +86,7 @@ INSTALLED_APPS = [
     'apps.bot',
     'apps.contact',
     'apps.file',
-    'apps.lead',
+    'apps.lead.apps.LeadConfig',
     'apps.company'
 ]
 
@@ -203,3 +203,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+COMPANY_CHANNEL_URL = os.environ['COMPANY_CHANNEL_URL']
+HIRING_CHANNEL = os.environ['HIRING_CHANNEL']
+
+GOOGLE_MAPS_TOKEN = os.environ['GOOGLE_MAPS_TOKEN']
+GOOGLE_MATRIX_URL = os.environ['GOOGLE_MATRIX_URL']

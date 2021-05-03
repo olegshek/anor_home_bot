@@ -1,7 +1,9 @@
 from aiogram import types
+from django.conf import settings
 
+from apps.bot import messages
 from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering
-from apps.lead.tortoise_models import Apartment, Store
+from apps.lead.tortoise_models import Apartment, Store, Duplex
 
 
 async def get_back_button_obj():
@@ -17,7 +19,7 @@ async def add_back_inline_button(keyboard, locale):
 
 
 async def language_choice(locale='ru', change=False):
-    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
 
     buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='language_choice').order_by(
@@ -55,7 +57,11 @@ async def main_menu(locale):
 
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='main_menu').order_by('ordering'):
         button = await keyboard_button.button
-        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        tg_button = types.InlineKeyboardButton(
+            getattr(button, f'text_{locale}'),
+            callback_data=button.code,
+            url=settings.COMPANY_CHANNEL_URL if button.code == 'subscribe_channel' else None
+        )
         keyboard.row(tg_button)
 
     return keyboard
@@ -104,11 +110,16 @@ async def project_menu(project_type, locale):
 
 
 async def room_quantity_or_floor_number_choice(project_id, project_type, locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
 
     option_name = 'room_quantity' if project_type == 'residential' else 'floor_number'
     object_model = Apartment if project_type == 'residential' else Store
-    options = list(set(await object_model.filter(project_id=project_id).values_list(option_name, flat=True)))
+    filters_params = {'project_id': project_id}
+
+    if project_type == 'residential':
+        filters_params['duplex_id__isnull'] = True
+
+    options = list(set(await object_model.filter(**filters_params).values_list(option_name, flat=True)))
 
     buttons = []
     for option in options:
@@ -118,19 +129,42 @@ async def room_quantity_or_floor_number_choice(project_id, project_type, locale)
         ))
 
     keyboard.add(*buttons)
+
+    if project_type == 'residential':
+        duplexes = await Duplex.filter(project_id=project_id)
+
+        if duplexes:
+            duplex_button = await Button.get(code='duplex')
+            keyboard.add(types.InlineKeyboardButton(getattr(duplex_button, f'text_{locale}'), callback_data='duplex'))
+
     await add_back_inline_button(keyboard, locale)
 
     return keyboard
 
 
-async def project_object_menu(project_object_id, locale, added_objects, projects_quantity, project_number):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+async def project_object_menu(project_object_id, locale, added_objects, projects_quantity, project_number,
+                              is_duplex=None, floor_number=None):
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
+
+    if is_duplex:
+        floor_message = await messages.get_message('floor_number_message', locale)
+        floor_switch_buttons = []
+        for switch, lookups in zip(['🔽', f'{floor_message} {floor_number}', '🔼'],
+                                   ['floor_number__lte', 'ignore', 'floor_number__gte']):
+            floor_switch_buttons.append(
+                types.InlineKeyboardButton(switch, callback_data=f'{project_object_id};{lookups}')
+            )
+        keyboard.add(*floor_switch_buttons)
 
     switch_buttons = []
     for switch, lookups in zip(['◀️', f'{project_number}/{projects_quantity}', '▶️'], ['lte', 'ignore', 'gte']):
         switch_buttons.append(types.InlineKeyboardButton(switch, callback_data=f'{project_object_id};{lookups}'))
 
-    keyboard_code = 'project_object' if project_object_id not in added_objects else 'added_project_object'
+    if is_duplex:
+        apartment = await Apartment.get(id=project_object_id)
+        keyboard_code = 'project_object' if (await apartment.duplex).id not in added_objects else 'added_project_object'
+    else:
+        keyboard_code = 'project_object' if project_object_id not in added_objects else 'added_project_object'
 
     keyboard.row(*switch_buttons)
 
@@ -193,6 +227,8 @@ async def anorhome_menu(locale):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
         keyboard.row(tg_button)
+
+    await add_back_inline_button(keyboard, locale)
 
     return keyboard
 

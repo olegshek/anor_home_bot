@@ -1,7 +1,17 @@
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin
 
-from apps.file.models import Photo, Video, Document
+from apps.file.forms import PhotoForm, DocumentForm
+from apps.file.models import Photo, Document
 
-admin.site.register(Photo)
-admin.site.register(Video)
-admin.site.register(Document)
+
+class PhotoAdmin(TranslationAdmin):
+    form = PhotoForm
+
+
+class DocumentAdmin(TranslationAdmin):
+    form = DocumentForm
+
+
+admin.site.register(Photo, PhotoAdmin)
+admin.site.register(Document, DocumentAdmin)

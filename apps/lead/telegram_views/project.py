@@ -7,6 +7,8 @@ from apps.lead import callback_filters
 from apps.lead.states import LeadForm
 from apps.lead.tortoise_models import CommercialProject, ResidentialProject, Apartment, Store, ApartmentTransaction, \
     StoreTransaction
+from apps.lead.tortoise_models.lead import DuplexTransaction
+from apps.lead.tortoise_models.project import Duplex
 from core.callback_filters import is_digit
 
 
@@ -88,27 +90,37 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     added_objects = await transaction_model.filter(lead_id__isnull=True).values_list(transaction__object_field_name,
                                                                                      flat=True)
 
-    project_object = await object_model.filter(
+    project_objects = object_model.filter(
         project__id=project_id,
         **{number_field_name: room_quantity_or_floor_number}
-    ).order_by('square').first()
+    ).order_by('square')
+
+    if object_model == Apartment:
+        project_objects = project_objects.exclude(duplex_id__isnull=False)
+
+    project_object = await project_objects.first()
 
     if object_id and option:
         current_object = await object_model.filter(id=object_id).first()
 
         if current_object:
+            exclude_data = {'id': object_id}
+
+            if object_model == ApartmentTransaction:
+                exclude_data['duplex_id__isnull'] = False
+
             project_object = await object_model.filter(
                 project__id=project_id,
                 **{
                     number_field_name: room_quantity_or_floor_number,
                     f'square__{option}': current_object.square
                 }
-            ).exclude(id=object_id).order_by('square').first()
+            ).exclude(**exclude_data).order_by('square').first()
 
     if not project_object:
         return
 
-    project_ids = list(await object_model.all().order_by('square').values_list('id', flat=True))
+    project_ids = await project_objects.values_list('id', flat=True)
     project_number = project_ids.index(project_object.id) + 1
     projects_quantity = len(project_ids)
     message = f'<b>{project_object.square}m</b>\n\n' \
@@ -116,6 +128,57 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects, projects_quantity,
                                                    project_number)
     photos = await project_object.photos
+    media_group = types.MediaGroup()
+
+    for photo in photos:
+        media_group.attach_photo(types.InputFile(photo.get_path()))
+
+    await try_delete_message(user_id, message_id)
+
+    sent_group = await bot.send_media_group(user_id, media_group)
+
+    await LeadForm.project_object_choice.set()
+    await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=sent_group[0].message_id,
+                           parse_mode='HTML')
+
+
+async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, lookups=None, apartment_id=None,
+                      floor_number_filter=None):
+    duplex = await Duplex.filter(project_id=project_id).order_by('room_quantity').first()
+
+    if duplex_id and lookups:
+        current_duplex = await Duplex.get(id=duplex_id)
+        duplex = await Duplex.filter(
+            project_id=project_id,
+            **{f'room_quantity__{lookups}': current_duplex.room_quantity}
+        ).exclude(id=current_duplex.id).order_by('room_quantity').first()
+
+    if not duplex:
+        return
+
+    apartment = await duplex.apartments.order_by('floor_number').first()
+
+    if apartment_id and floor_number_filter:
+        current_apartment = await Apartment.get(id=apartment_id)
+        duplex = await current_apartment.duplex
+        apartment = await duplex.apartments.filter(
+            **{floor_number_filter: current_apartment.floor_number}
+        ).exclude(id=current_apartment.id).first()
+
+    if not apartment:
+        return
+
+    added_duplexes = await DuplexTransaction.filter(lead_id__isnull=True).values_list('duplex_id', flat=True)
+
+    duplex_ids = list(await Duplex.filter(project_id=project_id).order_by('room_quantity').values_list('id', flat=True))
+    duplex_number = duplex_ids.index(duplex.id) + 1
+    duplexes_quantity = len(duplex_ids)
+
+    message = f'<b>{apartment.square}m</b>\n\n' \
+              f'{getattr(apartment, f"description_{locale}")}'
+    keyboard = await keyboards.project_object_menu(apartment.id, locale, added_duplexes, duplexes_quantity,
+                                                   duplex_number, True, apartment.floor_number)
+    photos = await apartment.photos
     media_group = types.MediaGroup()
 
     for photo in photos:
@@ -174,7 +237,7 @@ async def process_project_menu(query, state, locale):
         documents = await project.documents.all()
         location = await project.location
 
-        await bot.send_message(user_id, description, reply_markup=keyboards.back_keyboard(locale))
+        await try_delete_message(user_id, message_id)
 
         for photo in photos:
             with open(photo.get_path(), 'rb') as photo_data:
@@ -189,8 +252,8 @@ async def process_project_menu(query, state, locale):
             with open(document.get_path(), 'rb') as document_data:
                 await bot.send_document(
                     user_id,
-                    photo_data,
-                    caption=getattr(document_data, f'description_{locale}'),
+                    document_data,
+                    caption=getattr(document, f'description_{locale}'),
                     parse_mode='HTML'
                 )
 
@@ -199,22 +262,30 @@ async def process_project_menu(query, state, locale):
             await bot.send_message(user_id, getattr(location, f'description_{locale}'),
                                    reply_to_message_id=location_message.message_id)
 
+        await bot.send_message(user_id, description, reply_markup=await keyboards.back_keyboard(locale))
+
         await LeadForm.about_project.set()
 
     if code == 'download_catalogue':
+        await try_delete_message(user_id, message_id)
+
         documents = await project.catalogue_documents.all()
 
         for document in documents:
             with open(document.get_path(), 'rb') as document_data:
                 await bot.send_document(
                     user_id,
-                    photo_data,
-                    caption=getattr(document_data, f'description_{locale}'),
+                    document_data,
+                    caption=getattr(document, f'description_{locale}'),
                     parse_mode='HTML',
-                    reply_markup=keyboards.back_keyboard(locale)
+                    reply_markup=await keyboards.back_keyboard(locale)
                 )
 
         await LeadForm.catalogue.set()
+
+    if code == 'cart':
+        from apps.lead.telegram_views.lead import send_cart_menu
+        await send_cart_menu(user_id, query.message.message_id, locale, state)
 
 
 @dp.callback_query_handler(is_digit, state=LeadForm.room_quantity_or_floor_number_choice.state)
@@ -235,4 +306,40 @@ async def switch_project_object(query, state, locale):
     object_id = int(data[0])
     lookups = data[1]
 
+    async with state.proxy() as data:
+        project_id = data['project_id']
+        project_type = data['project_type']
+
+    if project_type == 'residential':
+        apartment = await Apartment.get(id=object_id)
+        duplex = await apartment.duplex
+
+        if duplex:
+            return await send_duplex(user_id, query.message.message_id, project_id, locale, duplex.id, lookups)
+
     await send_project_object(user_id, query.message.message_id, locale, state, object_id, lookups)
+
+
+@dp.callback_query_handler(callback_filters.is_duplex, state=LeadForm.room_quantity_or_floor_number_choice.state)
+async def select_duplex(query, locale, state):
+    user_id = query.from_user.id
+
+    async with state.proxy() as data:
+        project_id = data['project_id']
+        data['duplex_choice'] = True
+
+    await send_duplex(user_id, query.message.message_id, project_id, locale)
+
+
+@dp.callback_query_handler(callback_filters.is_floor_number_switch, state=LeadForm.project_object_choice.state)
+async def switch_duplex_floor_number(query, state, locale):
+    user_id = query.from_user.id
+    data = query.data.split(';')
+    apartment_id = int(data[0])
+    filter_name = data[1]
+
+    async with state.proxy() as data:
+        project_id = data['project_id']
+
+    await send_duplex(user_id, query.message.message_id, project_id, locale, apartment_id=apartment_id,
+                      floor_number_filter=filter_name)

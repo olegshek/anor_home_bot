@@ -18,10 +18,7 @@ def choose_button(query):
     data = query.data
     data = data.split(':')
 
-    if 'choose' in data:
-        return True
-
-    return False
+    return 'choose' in data
 
 
 async def project_menu(query):
@@ -48,7 +45,12 @@ def cart_menu(query):
 
 
 def confirm_button(query):
-    if 'confirm' in query.data:
-        return True
+    return 'confirm' in query.data
 
-    return False
+
+def is_duplex(query):
+    return 'duplex' == query.data
+
+
+def is_floor_number_switch(query):
+    return 'floor_number__gte' in query.data or 'floor_number__lte' in query.data

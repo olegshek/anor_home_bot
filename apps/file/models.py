@@ -29,14 +29,3 @@ class Document(File):
 
     def __str__(self):
         return self.document.name
-
-
-class Video(File):
-    video = models.FileField(verbose_name=_('Video'))
-
-    class Meta:
-        verbose_name = _('Video')
-        verbose_name_plural = _('Videos')
-
-    def __str__(self):
-        return self.video.name

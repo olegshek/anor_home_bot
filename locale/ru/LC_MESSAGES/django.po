@@ -1,0 +1,333 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-03 16:12+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: apps/bot/models.py:6 apps/bot/models.py:18 apps/bot/models.py:39
+msgid "Code"
+msgstr "Код"
+
+#: apps/bot/models.py:7 apps/company/models.py:11 apps/contact/models.py:21
+msgid "Text"
+msgstr "Текст"
+
+#: apps/bot/models.py:10
+msgid "Button"
+msgstr "Кнопка"
+
+#: apps/bot/models.py:11 apps/bot/models.py:20
+msgid "Buttons"
+msgstr "Кнопки"
+
+#: apps/bot/models.py:23 apps/bot/models.py:29 apps/bot/models.py:30
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+#: apps/bot/models.py:24
+msgid "Keyboards"
+msgstr "Клавиатуры"
+
+#: apps/bot/models.py:34
+msgid "Keyboard buttons ordering"
+msgstr ""
+
+#: apps/bot/models.py:35
+msgid "Keyboard buttons orderings"
+msgstr ""
+
+#: apps/bot/models.py:43
+msgid "Message"
+msgstr "Сообщение"
+
+#: apps/bot/models.py:44
+msgid "Messages"
+msgstr "Сообщения"
+
+#: apps/company/models.py:14 apps/company/models.py:15
+msgid "Company text"
+msgstr "Текст \"О компании\""
+
+#: apps/company/models.py:22 apps/company/models.py:47
+#: apps/company/models.py:60 apps/contact/models.py:32 apps/file/models.py:13
+#: apps/file/models.py:16
+msgid "Photo"
+msgstr "Фото"
+
+#: apps/company/models.py:25
+msgid "Company photo"
+msgstr "Фото \"О комании\""
+
+#: apps/company/models.py:26
+msgid "company photos"
+msgstr "Фото \"О комании\""
+
+#: apps/company/models.py:34 apps/file/models.py:24 apps/file/models.py:27
+msgid "Document"
+msgstr "Документ"
+
+#: apps/company/models.py:37
+msgid "Company document"
+msgstr "Документ \"О комании\""
+
+#: apps/company/models.py:38
+msgid "Company documents"
+msgstr "Документ \"О комании\""
+
+#: apps/company/models.py:45 apps/company/models.py:58
+#: apps/lead/models/project.py:22
+msgid "Name"
+msgstr "Название"
+
+#: apps/company/models.py:46 apps/company/models.py:59 apps/file/models.py:6
+#: apps/lead/models/project.py:11 apps/lead/models/project.py:23
+#: apps/lead/models/project.py:89 apps/lead/models/project.py:107
+msgid "Description"
+msgstr "Описание"
+
+#: apps/company/models.py:50 apps/company/models.py:72
+msgid "Service"
+msgstr "Услуга"
+
+#: apps/company/models.py:51
+msgid "Services"
+msgstr "Услуги"
+
+#: apps/company/models.py:63 apps/company/models.py:80
+msgid "Vacancy"
+msgstr "Вакансия"
+
+#: apps/company/models.py:64
+msgid "Vacancies"
+msgstr "Вакансии"
+
+#: apps/company/models.py:71 apps/company/models.py:79
+#: apps/lead/models/lead.py:11
+msgid "Number"
+msgstr "Номер"
+
+#: apps/company/models.py:74 apps/company/models.py:82
+#: apps/lead/models/customer.py:17 apps/lead/models/customer.py:30
+#: apps/lead/models/lead.py:12 apps/lead/models/lead.py:27
+#: apps/lead/models/lead.py:45 apps/lead/models/lead.py:61
+msgid "Customer"
+msgstr "Пользователь"
+
+#: apps/company/models.py:75 apps/company/models.py:84
+msgid "Created at"
+msgstr "Дата создания"
+
+#: apps/contact/models.py:10 apps/lead/models/project.py:14
+#: apps/lead/models/project.py:36 apps/lead/models/project.py:56
+msgid "Location"
+msgstr "Локация"
+
+#: apps/contact/models.py:13
+msgid "Contact location"
+msgstr "Контактная локация"
+
+#: apps/contact/models.py:14
+msgid "Contact locations"
+msgstr "Контактная локация"
+
+#: apps/contact/models.py:24 apps/contact/models.py:25
+msgid "Contact text"
+msgstr "Текст контакта"
+
+#: apps/contact/models.py:35
+msgid "Contact photo"
+msgstr "Фото контакта"
+
+#: apps/contact/models.py:36
+msgid "Contact photos"
+msgstr "Фото контакта"
+
+#: apps/file/models.py:17 apps/lead/models/project.py:32
+#: apps/lead/models/project.py:52 apps/lead/models/project.py:92
+#: apps/lead/models/project.py:109
+msgid "Photos"
+msgstr "Фото"
+
+#: apps/file/models.py:28 apps/lead/models/project.py:34
+#: apps/lead/models/project.py:54
+msgid "Documents"
+msgstr "Документы"
+
+#: apps/lead/forms.py:61
+msgid "Floor number is required for duplex"
+msgstr "Необходимо указать этаж для квартир дюплекса"
+
+#: apps/lead/forms.py:66
+msgid "Apartment with such floor number is already exist"
+msgstr "Квартира данного дюплекса с таким этажом уже существует"
+
+#: apps/lead/forms.py:69
+msgid "Project and room_quantity are required for not duplex apartment"
+msgstr "Необходимо указывать проект и количество комнат для обычных квартир"
+
+#: apps/lead/models/customer.py:11
+msgid "Username"
+msgstr ""
+
+#: apps/lead/models/customer.py:12
+msgid "Full name"
+msgstr "Полное имя"
+
+#: apps/lead/models/customer.py:13
+msgid "Phone number"
+msgstr "Номер телефона"
+
+#: apps/lead/models/customer.py:14
+msgid "Language"
+msgstr "Язык"
+
+#: apps/lead/models/customer.py:18
+msgid "Customers"
+msgstr "Пользователи"
+
+#: apps/lead/models/lead.py:18 apps/lead/models/lead.py:29
+#: apps/lead/models/lead.py:47 apps/lead/models/lead.py:63
+msgid "Lead"
+msgstr "Запрос"
+
+#: apps/lead/models/lead.py:19
+msgid "Leads"
+msgstr "Запросы"
+
+#: apps/lead/models/lead.py:31
+msgid "apartment"
+msgstr "Квартира"
+
+#: apps/lead/models/lead.py:36
+#, fuzzy
+#| msgid "Apartments"
+msgid "Apartment transaction"
+msgstr "Квартиры"
+
+#: apps/lead/models/lead.py:37
+#, fuzzy
+#| msgid "Apartments"
+msgid "Apartment transactions"
+msgstr "Квартиры"
+
+#: apps/lead/models/lead.py:48 apps/lead/models/project.py:112
+msgid "Store"
+msgstr "Магазин"
+
+#: apps/lead/models/lead.py:52
+msgid "Store transaction"
+msgstr "Магазин"
+
+#: apps/lead/models/lead.py:53
+msgid "Store transactions"
+msgstr "Магазины"
+
+#: apps/lead/models/lead.py:64 apps/lead/models/project.py:75
+#: apps/lead/models/project.py:86
+msgid "Duplex"
+msgstr "Дюплекс"
+
+#: apps/lead/models/lead.py:69
+msgid "Duplex transaction"
+msgstr "Дюплекс"
+
+#: apps/lead/models/lead.py:70
+msgid "Duplex transactions"
+msgstr "Дюплексы"
+
+#: apps/lead/models/project.py:8
+msgid "Latitude"
+msgstr ""
+
+#: apps/lead/models/project.py:9
+msgid "Longitude"
+msgstr ""
+
+#: apps/lead/models/project.py:15
+msgid "Locations"
+msgstr "Локации"
+
+#: apps/lead/models/project.py:31 apps/lead/models/project.py:51
+msgid "Main photo"
+msgstr "Главное фото"
+
+#: apps/lead/models/project.py:39 apps/lead/models/project.py:59
+msgid "Catalog documents"
+msgstr "Документы каталога"
+
+#: apps/lead/models/project.py:42
+msgid "Residential project"
+msgstr "Жилой проект"
+
+#: apps/lead/models/project.py:43
+msgid "Residential projects"
+msgstr "Жилые проекты"
+
+#: apps/lead/models/project.py:62
+msgid "Commercial project"
+msgstr "Нежилой проект"
+
+#: apps/lead/models/project.py:63
+msgid "Commercial projects"
+msgstr "Нежилые проекты"
+
+#: apps/lead/models/project.py:71 apps/lead/models/project.py:84
+#: apps/lead/models/project.py:104
+msgid "Project"
+msgstr "Проект"
+
+#: apps/lead/models/project.py:76
+msgid "Duplexes"
+msgstr "Дюплексы"
+
+#: apps/lead/models/project.py:87
+msgid "Room quantity"
+msgstr "Количество комнат"
+
+#: apps/lead/models/project.py:88 apps/lead/models/project.py:106
+msgid "Square"
+msgstr "Площадь"
+
+#: apps/lead/models/project.py:90 apps/lead/models/project.py:105
+msgid "Floor number"
+msgstr "Этаж"
+
+#: apps/lead/models/project.py:95
+msgid "Apartment"
+msgstr "Квартира"
+
+#: apps/lead/models/project.py:96
+msgid "Apartments"
+msgstr "Квартиры"
+
+#: apps/lead/models/project.py:113
+msgid "Stores"
+msgstr "Магазины"
+
+#: config/settings.py:171
+msgid "Russian"
+msgstr ""
+
+#: config/settings.py:172
+msgid "Uzbek"
+msgstr ""
+
+#: config/settings.py:173
+msgid "English"
+msgstr ""
