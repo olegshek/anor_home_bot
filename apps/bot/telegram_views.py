@@ -46,6 +46,19 @@ async def back(user_id, state, locale, message_id=None):
     state_name = await state.get_state()
     customer = await Customer.get(id=user_id)
 
+    if state_name == CustomerForm.full_name.state:
+        await CustomerForm.language_choice.set()
+        return await bot.send_message(user_id, await messages.get_message('language_choice', locale),
+                                      reply_markup=await keyboards.language_choice(locale, False))
+
+    if state_name == CustomerForm.phone_number.state:
+        await CustomerForm.full_name.set()
+        return await bot.send_message(
+            customer.id,
+            await messages.get_message('full_name', locale),
+            reply_markup=await keyboards.back_keyboard(locale)
+        )
+
     if state_name in [
         CompanyForm.menu.state,
         LeadForm.project_type.state,
