@@ -55,6 +55,7 @@ async def phone_number(locale):
 async def main_menu(locale):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
+    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='main_menu').order_by('ordering'):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(
@@ -62,7 +63,9 @@ async def main_menu(locale):
             callback_data=button.code,
             url=settings.COMPANY_CHANNEL_URL if button.code == 'subscribe_channel' else None
         )
-        keyboard.row(tg_button)
+        buttons.append(tg_button)
+
+    keyboard.add(*buttons)
 
     return keyboard
 
@@ -70,10 +73,13 @@ async def main_menu(locale):
 async def project_types(locale):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
+    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='project_types').order_by('ordering'):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
-        keyboard.row(tg_button)
+        buttons.append(tg_button)
+
+    keyboard.add(*buttons)
 
     await add_back_inline_button(keyboard, locale)
 
@@ -96,13 +102,16 @@ async def project_choice(project, locale, is_last=False):
 
 
 async def project_menu(project_type, locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
     keyboard_code = 'residential_project_menu' if project_type == 'residential' else 'commercial_project_menu'
 
+    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code=keyboard_code).order_by('ordering'):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
-        keyboard.row(tg_button)
+        buttons.append(tg_button)
+
+    keyboard.add(*buttons)
 
     await add_back_inline_button(keyboard, locale)
 
@@ -223,10 +232,13 @@ async def confirmation(locale):
 async def anorhome_menu(locale):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
+    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='anorhome_menu').order_by('ordering'):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
-        keyboard.row(tg_button)
+        buttons.append(tg_button)
+
+    keyboard.add(*buttons)
 
     await add_back_inline_button(keyboard, locale)
 

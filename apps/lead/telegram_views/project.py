@@ -19,28 +19,29 @@ def get_project_message(project, locale):
 
 
 async def send_project_choice(user_id, message_id, locale, project_type):
-    await try_delete_message(user_id, message_id)
-
     project_model = CommercialProject if project_type == 'commercial' else ResidentialProject
     projects = await project_model.all().order_by('name')
-    projects_len = len(projects)
 
-    for project in projects:
-        is_last = True if projects.index(project) == projects_len - 1 else False
-        keyboard = await keyboards.project_choice(project, locale, is_last)
-        photo = await project.main_photo
-        text = get_project_message(project, locale)
+    if projects:
+        await try_delete_message(user_id, message_id)
 
-        with open(photo.get_path(), 'rb') as photo_data:
-            await bot.send_photo(
-                user_id,
-                photo_data,
-                caption=text,
-                reply_markup=keyboard,
-                parse_mode='HTML'
-            )
+        projects_len = len(projects)
+        for project in projects:
+            is_last = True if projects.index(project) == projects_len - 1 else False
+            keyboard = await keyboards.project_choice(project, locale, is_last)
+            photo = await project.main_photo
+            text = get_project_message(project, locale)
 
-    await LeadForm.project_choice.set()
+            with open(photo.get_path(), 'rb') as photo_data:
+                await bot.send_photo(
+                    user_id,
+                    photo_data,
+                    caption=text,
+                    reply_markup=keyboard,
+                    parse_mode='HTML'
+                )
+
+        await LeadForm.project_choice.set()
 
 
 async def send_project_menu(user_id, message_id, locale, project_type, project_id):
