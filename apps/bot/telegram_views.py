@@ -203,7 +203,7 @@ async def main_menu(query, locale, state):
         await try_delete_message(user_id, message_id)
         contact_text = await ContactText.first()
         contact_photos = await ContactPhoto.all()
-        contact_location = await (await ContactLocation.first()).location
+        contact_location = await ContactLocation.first()
 
         await bot.send_message(user_id, getattr(contact_text, f'text_{locale}'),
                                reply_markup=await keyboards.back_keyboard(locale))
@@ -218,9 +218,10 @@ async def main_menu(query, locale, state):
                     parse_mode='HTML'
                 )
 
-        if contact_location and contact_location.latitude and contact_location.longitude:
-            location_message = await bot.send_location(user_id, contact_location.latitude, contact_location.longitude)
-            await bot.send_message(user_id, getattr(contact_location, f'description_{locale}'),
+        if contact_location:
+            location = await contact_location.location
+            location_message = await bot.send_location(user_id, location.latitude, location.longitude)
+            await bot.send_message(user_id, getattr(location, f'description_{locale}'),
                                    reply_to_message_id=location_message.message_id)
 
         await BotForm.contacts.set()
