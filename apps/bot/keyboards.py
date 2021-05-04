@@ -232,13 +232,10 @@ async def confirmation(locale):
 async def anorhome_menu(locale):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
-    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='anorhome_menu').order_by('ordering'):
         button = await keyboard_button.button
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
-        buttons.append(tg_button)
-
-    keyboard.add(*buttons)
+        keyboard.add(tg_button)
 
     await add_back_inline_button(keyboard, locale)
 
