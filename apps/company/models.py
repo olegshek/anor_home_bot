@@ -15,7 +15,7 @@ class CompanyText(models.Model):
         verbose_name_plural = _('Company text')
 
     def __str__(self):
-        return self.text_tu
+        return self.text_ru
 
 
 class CompanyPhoto(models.Model):
