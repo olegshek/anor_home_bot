@@ -10,6 +10,7 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         fields = (
+            'name',
             'description_en',
             'description_ru',
             'description_uz',
