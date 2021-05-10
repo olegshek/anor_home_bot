@@ -167,7 +167,7 @@ async def apply_service(query, locale, state):
 
 
 @dp.callback_query_handler(callback_filters.is_apply, state=CompanyForm.vacancy_detail.state)
-async def apply_service(query, locale, state):
+async def apply_vacancy(query, locale, state):
     user_id = query.from_user.id
     vacancy_id = int(query.data.split(':')[1])
 
