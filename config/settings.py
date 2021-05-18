@@ -74,6 +74,7 @@ ALLOWED_HOSTS = get_env_list('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'modeltranslation',
+    'jazzmin',
 
     'django.contrib.admin',
     'django.contrib.auth',
