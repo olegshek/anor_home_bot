@@ -15,8 +15,8 @@ class VacancyAdmin(TranslationAdmin):
 
 
 class ServiceRequestAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'customer', 'created_at')
-    list_filter = ('customer', 'created_at')
+    list_display = ('__str__', 'customer', 'service', 'created_at')
+    list_filter = ('customer', 'service', 'created_at')
 
     def has_change_permission(self, request, obj=None):
         return None
