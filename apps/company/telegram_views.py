@@ -202,8 +202,10 @@ async def apply_cv(message, locale, state):
 
     customer = await Customer.get(id=user_id)
 
+    vacancy = await request.vacancy
     hiring_message = f'{customer.full_name}\n' \
-                     f'{customer.phone_number}'
+                     f'{customer.phone_number}\n\n' \
+                     f'Вакансия: {vacancy.name_ru}'
     await bot.send_document(settings.HIRING_CHANNEL, file_id, caption=hiring_message)
 
     await send_main_menu(customer, locale, state)

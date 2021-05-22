@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 16:12+0500\n"
+"POT-Creation-Date: 2021-05-22 18:43+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgstr "Название"
 
 #: apps/company/models.py:46 apps/company/models.py:59 apps/file/models.py:6
 #: apps/lead/models/project.py:11 apps/lead/models/project.py:23
-#: apps/lead/models/project.py:89 apps/lead/models/project.py:107
+#: apps/lead/models/project.py:92 apps/lead/models/project.py:110
 msgid "Description"
 msgstr "Описание"
 
@@ -109,7 +109,7 @@ msgstr "Услуга"
 msgid "Services"
 msgstr "Услуги"
 
-#: apps/company/models.py:63 apps/company/models.py:80
+#: apps/company/models.py:63 apps/company/models.py:88
 msgid "Vacancy"
 msgstr "Вакансия"
 
@@ -117,24 +117,34 @@ msgstr "Вакансия"
 msgid "Vacancies"
 msgstr "Вакансии"
 
-#: apps/company/models.py:71 apps/company/models.py:79
+#: apps/company/models.py:71 apps/company/models.py:87
 #: apps/lead/models/lead.py:11
 msgid "Number"
 msgstr "Номер"
 
-#: apps/company/models.py:74 apps/company/models.py:82
+#: apps/company/models.py:74 apps/company/models.py:90
 #: apps/lead/models/customer.py:17 apps/lead/models/customer.py:30
 #: apps/lead/models/lead.py:12 apps/lead/models/lead.py:27
 #: apps/lead/models/lead.py:45 apps/lead/models/lead.py:61
 msgid "Customer"
 msgstr "Пользователь"
 
-#: apps/company/models.py:75 apps/company/models.py:84
+#: apps/company/models.py:75 apps/company/models.py:92
 msgid "Created at"
 msgstr "Дата создания"
 
+#: apps/company/models.py:78
+#| msgid "Services"
+msgid "Service request"
+msgstr "Запрос на услугу"
+
+#: apps/company/models.py:79
+#| msgid "Services"
+msgid "Service requests"
+msgstr "Запросы на услуги"
+
 #: apps/contact/models.py:10 apps/lead/models/project.py:14
-#: apps/lead/models/project.py:36 apps/lead/models/project.py:56
+#: apps/lead/models/project.py:39 apps/lead/models/project.py:59
 msgid "Location"
 msgstr "Локация"
 
@@ -158,26 +168,26 @@ msgstr "Фото контакта"
 msgid "Contact photos"
 msgstr "Фото контакта"
 
-#: apps/file/models.py:17 apps/lead/models/project.py:32
-#: apps/lead/models/project.py:52 apps/lead/models/project.py:92
-#: apps/lead/models/project.py:109
+#: apps/file/models.py:17 apps/lead/models/project.py:35
+#: apps/lead/models/project.py:55 apps/lead/models/project.py:95
+#: apps/lead/models/project.py:112
 msgid "Photos"
 msgstr "Фото"
 
-#: apps/file/models.py:28 apps/lead/models/project.py:34
-#: apps/lead/models/project.py:54
+#: apps/file/models.py:28 apps/lead/models/project.py:37
+#: apps/lead/models/project.py:57
 msgid "Documents"
 msgstr "Документы"
 
-#: apps/lead/forms.py:61
+#: apps/lead/forms.py:62
 msgid "Floor number is required for duplex"
 msgstr "Необходимо указать этаж для квартир дюплекса"
 
-#: apps/lead/forms.py:66
+#: apps/lead/forms.py:67
 msgid "Apartment with such floor number is already exist"
 msgstr "Квартира данного дюплекса с таким этажом уже существует"
 
-#: apps/lead/forms.py:69
+#: apps/lead/forms.py:70
 msgid "Project and room_quantity are required for not duplex apartment"
 msgstr "Необходимо указывать проект и количество комнат для обычных квартир"
 
@@ -215,18 +225,16 @@ msgid "apartment"
 msgstr "Квартира"
 
 #: apps/lead/models/lead.py:36
-#, fuzzy
 #| msgid "Apartments"
 msgid "Apartment transaction"
 msgstr "Квартиры"
 
 #: apps/lead/models/lead.py:37
-#, fuzzy
 #| msgid "Apartments"
 msgid "Apartment transactions"
 msgstr "Квартиры"
 
-#: apps/lead/models/lead.py:48 apps/lead/models/project.py:112
+#: apps/lead/models/lead.py:48 apps/lead/models/project.py:115
 msgid "Store"
 msgstr "Магазин"
 
@@ -238,8 +246,8 @@ msgstr "Магазин"
 msgid "Store transactions"
 msgstr "Магазины"
 
-#: apps/lead/models/lead.py:64 apps/lead/models/project.py:75
-#: apps/lead/models/project.py:86
+#: apps/lead/models/lead.py:64 apps/lead/models/project.py:78
+#: apps/lead/models/project.py:89
 msgid "Duplex"
 msgstr "Дюплекс"
 
@@ -263,71 +271,71 @@ msgstr ""
 msgid "Locations"
 msgstr "Локации"
 
-#: apps/lead/models/project.py:31 apps/lead/models/project.py:51
+#: apps/lead/models/project.py:34 apps/lead/models/project.py:54
 msgid "Main photo"
 msgstr "Главное фото"
 
-#: apps/lead/models/project.py:39 apps/lead/models/project.py:59
+#: apps/lead/models/project.py:42 apps/lead/models/project.py:62
 msgid "Catalog documents"
 msgstr "Документы каталога"
 
-#: apps/lead/models/project.py:42
+#: apps/lead/models/project.py:45
 msgid "Residential project"
 msgstr "Жилой проект"
 
-#: apps/lead/models/project.py:43
+#: apps/lead/models/project.py:46
 msgid "Residential projects"
 msgstr "Жилые проекты"
 
-#: apps/lead/models/project.py:62
+#: apps/lead/models/project.py:65
 msgid "Commercial project"
 msgstr "Нежилой проект"
 
-#: apps/lead/models/project.py:63
+#: apps/lead/models/project.py:66
 msgid "Commercial projects"
 msgstr "Нежилые проекты"
 
-#: apps/lead/models/project.py:71 apps/lead/models/project.py:84
-#: apps/lead/models/project.py:104
+#: apps/lead/models/project.py:74 apps/lead/models/project.py:87
+#: apps/lead/models/project.py:107
 msgid "Project"
 msgstr "Проект"
 
-#: apps/lead/models/project.py:76
+#: apps/lead/models/project.py:79
 msgid "Duplexes"
 msgstr "Дюплексы"
 
-#: apps/lead/models/project.py:87
+#: apps/lead/models/project.py:90
 msgid "Room quantity"
 msgstr "Количество комнат"
 
-#: apps/lead/models/project.py:88 apps/lead/models/project.py:106
+#: apps/lead/models/project.py:91 apps/lead/models/project.py:109
 msgid "Square"
 msgstr "Площадь"
 
-#: apps/lead/models/project.py:90 apps/lead/models/project.py:105
+#: apps/lead/models/project.py:93 apps/lead/models/project.py:108
 msgid "Floor number"
 msgstr "Этаж"
 
-#: apps/lead/models/project.py:95
+#: apps/lead/models/project.py:98
 msgid "Apartment"
 msgstr "Квартира"
 
-#: apps/lead/models/project.py:96
+#: apps/lead/models/project.py:99
 msgid "Apartments"
 msgstr "Квартиры"
 
-#: apps/lead/models/project.py:113
+#: apps/lead/models/project.py:116
 msgid "Stores"
 msgstr "Магазины"
 
-#: config/settings.py:171
+#: config/settings.py:172
 msgid "Russian"
 msgstr ""
 
-#: config/settings.py:172
+#: config/settings.py:173
 msgid "Uzbek"
 msgstr ""
 
-#: config/settings.py:173
+#: config/settings.py:174
 msgid "English"
 msgstr ""

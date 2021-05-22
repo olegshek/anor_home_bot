@@ -74,6 +74,14 @@ class ServiceRequest(models.Model):
                                  verbose_name=_('Customer'))
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_('Created at'))
 
+    class Meta:
+        verbose_name = _('Service request')
+        verbose_name_plural = _('Service requests')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return str(self.number)
+
 
 class VacancyRequest(models.Model):
     number = models.IntegerField(default=generate_number, verbose_name=_('Number'))
