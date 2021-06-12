@@ -118,7 +118,7 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
                 project__id=project_id,
                 **{
                     number_field_name: room_quantity_or_floor_number,
-                    f'id__{option}': current_object.square
+                    f'id__{option}': current_object.id
                 }
             ).exclude(**exclude_data).order_by('id').first()
 
