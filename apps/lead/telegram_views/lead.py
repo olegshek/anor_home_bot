@@ -1,4 +1,5 @@
 from aiogram import types
+from aiogram.types import ContentType
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages
 from apps.bot.telegram_views import send_main_menu
@@ -127,10 +128,12 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
     if transaction_model != DuplexTransaction:
         message += f'{getattr(project_object, f"description_{locale}")}'
 
-    keyboard = await keyboards.cart_menu(transaction.id, locale, transactions_quantity, transaction_number)
+    keyboard = await keyboards.cart_inline_menu(transaction.id, locale, transactions_quantity, transaction_number)
 
     reply_to_message_id = None
     await try_delete_message(user_id, message_id)
+
+    await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart_reply_menu(locale))
 
     if transaction_model != DuplexTransaction:
         photos = await project_object.photos
@@ -179,10 +182,10 @@ async def add_to_cart(query, locale, state):
     await send_project_object(user_id, message_id, locale, state, object_id)
 
 
-@dp.callback_query_handler(callback_filters.cart, state='*')
-async def cart(query, locale, state):
-    user_id = query.from_user.id
-    await send_cart_menu(user_id, query.message.message_id, locale, state)
+@dp.message_handler(callback_filters.cart, state='*', content_types=[ContentType.TEXT])
+async def cart(message, locale, state):
+    user_id = message.from_user.id
+    await send_cart_menu(user_id, message.message_id, locale, state)
 
 
 @dp.callback_query_handler(callback_filters.is_switch, state=LeadForm.cart.state)
@@ -194,8 +197,8 @@ async def switch_cart(query, locale, state):
     await send_cart_menu(user_id, query.message.message_id, locale, state, transaction_id, lookups)
 
 
-@dp.callback_query_handler(callback_filters.cart_menu, state=LeadForm.cart.state)
-async def process_cart_menu(query, locale, state):
+@dp.callback_query_handler(callback_filters.cart_inline_menu, state=LeadForm.cart.state)
+async def process_cart_inline_menu(query, locale, state):
     user_id = query.from_user.id
     message_id = query.message.message_id
     query_data = query.data.split(';')
@@ -214,13 +217,25 @@ async def process_cart_menu(query, locale, state):
         await transaction_model.filter(id=transaction_id).delete()
         return await send_cart_menu(user_id, query.message.message_id, locale, state)
 
-    if 'continue_review' in query.data:
+
+@dp.message_handler(callback_filters.cart_reply_menu, state=LeadForm.cart.state, content_types=[ContentType.TEXT])
+async def process_cart_reply_menu(message, locale, state):
+    user_id = message.from_user.id
+    message_id = message.message_id
+    code = (await Button.filter(**{f'text_{locale}': message.text}).first()).code
+
+    async with state.proxy() as data:
+        project_type = data['project_type']
+
+    if code == 'continue_review':
         async with state.proxy() as data:
             data['duplex_cart'] = False
 
         return await send_project_choice(user_id, message_id, locale, project_type)
 
-    if 'consultation_request' in query.data:
+    if code == 'consultation_request':
+        transaction_model = ApartmentTransaction if project_type == 'residential' else StoreTransaction
+
         transactions = list(await transaction_model.filter(customer_id=user_id, lead_id__isnull=True))
         duplex_transactions = []
 
@@ -261,9 +276,10 @@ async def process_cart_menu(query, locale, state):
         await bot.send_message(user_id, message, reply_markup=keyboard, parse_mode='HTML')
 
 
-@dp.callback_query_handler(callback_filters.confirm_button, state=LeadForm.lead_confirmation.state)
-async def confirm_lead(query, locale, state):
-    user_id = query.from_user.id
+@dp.message_handler(callback_filters.confirm_button, state=LeadForm.lead_confirmation.state,
+                    content_types=[ContentType.TEXT])
+async def confirm_lead(message, locale, state):
+    user_id = message.from_user.id
 
     async with state.proxy() as data:
         project_type = data['project_type']
@@ -277,7 +293,7 @@ async def confirm_lead(query, locale, state):
         await DuplexTransaction.filter(customer_id=user_id, lead_id__isnull=True).update(lead_id=lead.id)
 
     message = await messages.get_message('request_accepted', locale)
-    await bot.edit_message_text(message, user_id, query.message.message_id)
+    await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
     message = await messages.get_message('request_number', locale) + f' {lead.number}'
     await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
 

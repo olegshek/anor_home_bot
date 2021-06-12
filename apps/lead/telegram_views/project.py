@@ -1,7 +1,9 @@
 from aiogram import types
+from aiogram.types import ContentType
 
 from apps.bot import dispatcher as dp, bot, keyboards
 from apps.bot.messages import get_message
+from apps.bot.tortoise_models import Button
 from apps.bot.utils import try_delete_message
 from apps.lead import callback_filters
 from apps.lead.states import LeadForm
@@ -9,7 +11,7 @@ from apps.lead.tortoise_models import CommercialProject, ResidentialProject, Apa
     StoreTransaction
 from apps.lead.tortoise_models.lead import DuplexTransaction
 from apps.lead.tortoise_models.project import Duplex
-from core.callback_filters import is_digit
+from core.callback_filters import message_is_digit
 
 
 def get_project_message(project, locale):
@@ -25,10 +27,12 @@ async def send_project_choice(user_id, message_id, locale, project_type):
     if projects:
         await try_delete_message(user_id, message_id)
 
-        projects_len = len(projects)
+        menu_keyboard = await keyboards.cart(locale)
+        menu_message = await get_message('residence_choice', locale)
+        await bot.send_message(user_id, menu_message, reply_markup=menu_keyboard)
+
         for project in projects:
-            is_last = True if projects.index(project) == projects_len - 1 else False
-            keyboard = await keyboards.project_choice(project, locale, is_last)
+            keyboard = await keyboards.project_choice(project, locale)
             photo = await project.main_photo
             text = get_project_message(project, locale)
 
@@ -68,7 +72,7 @@ async def send_project_menu(user_id, message_id, locale, project_type, project_i
 async def send_room_quantity_or_floor_number(user_id, message_id, locale, project_id, project_type):
     await try_delete_message(user_id, message_id)
 
-    message_code = 'room_quantity' if project_type == 'commercial' else 'floor_number'
+    message_code = 'room_quantity' if project_type == 'residential' else 'floor_number'
     message = await get_message(message_code, locale)
     keyboard = await keyboards.room_quantity_or_floor_number_choice(project_id, project_type, locale)
 
@@ -138,6 +142,8 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
 
     sent_group = await bot.send_media_group(user_id, media_group)
 
+    await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart(locale))
+
     await LeadForm.project_object_choice.set()
     await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=sent_group[0].message_id,
                            parse_mode='HTML')
@@ -194,14 +200,15 @@ async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, l
                            parse_mode='HTML')
 
 
-@dp.callback_query_handler(callback_filters.project_type, state=LeadForm.project_type.state)
-async def choose_project_type(query, locale, state):
-    project_type = query.data
+@dp.message_handler(callback_filters.project_type, state=LeadForm.project_type.state, content_types=[ContentType.TEXT])
+async def choose_project_type(message, locale, state):
+    project_type_text = message.text
+    project_type = (await Button.filter(**{f'text_{locale}': project_type_text}).first()).code
 
     async with state.proxy() as data:
         data['project_type'] = project_type
 
-    await send_project_choice(query.from_user.id, query.message.message_id, locale, project_type)
+    await send_project_choice(message.from_user.id, message.message_id, locale, project_type)
 
 
 @dp.callback_query_handler(callback_filters.choose_button, state=LeadForm.project_choice.state)
@@ -216,11 +223,11 @@ async def project_choice(query, state, locale):
     await send_project_menu(user_id, query.message.message_id, locale, project_type, project_id)
 
 
-@dp.callback_query_handler(callback_filters.project_menu, state=LeadForm.project_menu.state)
-async def process_project_menu(query, state, locale):
-    user_id = query.from_user.id
-    code = query.data
-    message_id = query.message.message_id
+@dp.message_handler(callback_filters.project_menu, state=LeadForm.project_menu.state, content_types=[ContentType.TEXT])
+async def process_project_menu(message, state, locale):
+    user_id = message.from_user.id
+    code = (await Button.filter(**{f'text_{locale}': message.text}).first()).code
+    message_id = message.message_id
 
     async with state.proxy() as data:
         project_id = data['project_id']
@@ -284,20 +291,17 @@ async def process_project_menu(query, state, locale):
 
         await LeadForm.catalogue.set()
 
-    if code == 'cart':
-        from apps.lead.telegram_views.lead import send_cart_menu
-        await send_cart_menu(user_id, query.message.message_id, locale, state)
 
-
-@dp.callback_query_handler(is_digit, state=LeadForm.room_quantity_or_floor_number_choice.state)
-async def room_quantity_or_floor_number_choice(query, state, locale):
-    user_id = query.from_user.id
-    room_quantity_or_floor_number = int(query.data)
+@dp.message_handler(message_is_digit, state=LeadForm.room_quantity_or_floor_number_choice.state,
+                    content_types=[ContentType.TEXT])
+async def room_quantity_or_floor_number_choice(message, state, locale):
+    user_id = message.from_user.id
+    room_quantity_or_floor_number = int(message.text)
 
     async with state.proxy() as data:
         data['room_quantity_or_floor_number'] = room_quantity_or_floor_number
 
-    await send_project_object(user_id, query.message.message_id, locale, state)
+    await send_project_object(user_id, message.message_id, locale, state)
 
 
 @dp.callback_query_handler(callback_filters.is_switch, state=LeadForm.project_object_choice.state)

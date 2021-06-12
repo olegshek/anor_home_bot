@@ -18,6 +18,14 @@ async def add_back_inline_button(keyboard, locale):
     return keyboard
 
 
+async def add_back_reply_button(keyboard, locale):
+    back_button_obj = await get_back_button_obj()
+    keyboard.add(
+        types.KeyboardButton(getattr(back_button_obj, f'text_{locale}'))
+    )
+    return keyboard
+
+
 async def language_choice(locale='ru', change=False):
     keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
 
@@ -30,16 +38,13 @@ async def language_choice(locale='ru', change=False):
             button.text_ru if code == 'ru' else button.text_uz if code == 'uz' else button.text_en
         ))
 
-    if change:
-        back_button_obj = await get_back_button_obj()
-        buttons.append(types.KeyboardButton(getattr(back_button_obj, f'text_{locale}')))
-
     keyboard.add(*buttons)
+    if change:
+        await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
 async def phone_number(locale):
-    back_button_obj = await get_back_button_obj()
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='phone_number').order_by('ordering'):
@@ -48,7 +53,7 @@ async def phone_number(locale):
             getattr(button, f'text_{locale}'),
             request_contact=True if button.code == 'phone_number' else None
         ))
-    keyboard.add(types.KeyboardButton(getattr(back_button_obj, f'text_{locale}')))
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
@@ -66,60 +71,57 @@ async def main_menu(locale):
         buttons.append(tg_button)
 
     keyboard.add(*buttons)
-
     return keyboard
 
 
 async def project_types(locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
     buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='project_types').order_by('ordering'):
         button = await keyboard_button.button
-        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        tg_button = types.KeyboardButton(getattr(button, f'text_{locale}'))
         buttons.append(tg_button)
 
     keyboard.add(*buttons)
-
-    await add_back_inline_button(keyboard, locale)
-
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
-async def project_choice(project, locale, is_last=False):
+async def project_choice(project, locale):
     button = await Button.get(code='choose')
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     keyboard.row(
         types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{button.code}:{project.pk}')
     )
+    return keyboard
 
-    if is_last:
-        cart_button = await Button.get(code='cart')
-        keyboard.add(types.InlineKeyboardButton(getattr(cart_button, f'text_{locale}'), callback_data=cart_button.code))
-        await add_back_inline_button(keyboard, locale)
 
+async def cart(locale):
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    cart_button = await Button.get(code='cart')
+    keyboard.add(types.KeyboardButton(getattr(cart_button, f'text_{locale}')))
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
 async def project_menu(project_type, locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard_code = 'residential_project_menu' if project_type == 'residential' else 'commercial_project_menu'
 
     buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code=keyboard_code).order_by('ordering'):
         button = await keyboard_button.button
-        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
+        tg_button = types.KeyboardButton(getattr(button, f'text_{locale}'))
         buttons.append(tg_button)
 
     keyboard.add(*buttons)
-
-    await add_back_inline_button(keyboard, locale)
-
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
 async def room_quantity_or_floor_number_choice(project_id, project_type, locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=3)
+    keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
 
     option_name = 'room_quantity' if project_type == 'residential' else 'floor_number'
     object_model = Apartment if project_type == 'residential' else Store
@@ -132,10 +134,7 @@ async def room_quantity_or_floor_number_choice(project_id, project_type, locale)
 
     buttons = []
     for option in options:
-        buttons.append(types.InlineKeyboardButton(
-            str(option),
-            callback_data=str(option)
-        ))
+        buttons.append(types.KeyboardButton(str(option)))
 
     keyboard.add(*buttons)
 
@@ -144,10 +143,9 @@ async def room_quantity_or_floor_number_choice(project_id, project_type, locale)
 
         if duplexes:
             duplex_button = await Button.get(code='duplex')
-            keyboard.add(types.InlineKeyboardButton(getattr(duplex_button, f'text_{locale}'), callback_data='duplex'))
+            keyboard.add(types.KeyboardButton(getattr(duplex_button, f'text_{locale}')))
 
-    await add_back_inline_button(keyboard, locale)
-
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
@@ -187,12 +185,10 @@ async def project_object_menu(project_object_id, locale, added_objects, projects
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=code)
         keyboard.row(tg_button)
 
-    await add_back_inline_button(keyboard, locale)
-
     return keyboard
 
 
-async def cart_menu(transaction_id, locale, transactions_quantity, transaction_number):
+async def cart_inline_menu(transaction_id, locale, transactions_quantity, transaction_number):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
 
     switch_buttons = []
@@ -201,7 +197,7 @@ async def cart_menu(transaction_id, locale, transactions_quantity, transaction_n
 
     keyboard.row(*switch_buttons)
 
-    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='cart_menu').order_by('ordering'):
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='cart_inline_menu').order_by('ordering'):
         button = await keyboard_button.button
         code = button.code
 
@@ -211,13 +207,25 @@ async def cart_menu(transaction_id, locale, transactions_quantity, transaction_n
         tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=code)
         keyboard.row(tg_button)
 
-    await add_back_inline_button(keyboard, locale)
+    return keyboard
 
+
+async def cart_reply_menu(locale):
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+
+    buttons = []
+    for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='cart_reply_menu').order_by('ordering'):
+        button = await keyboard_button.button
+        tg_button = types.KeyboardButton(getattr(button, f'text_{locale}'))
+        buttons.append(tg_button)
+
+    keyboard.add(*buttons)
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
 async def confirmation(locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
     confirm_button = await Button.get(code='confirm')
     keyboard.add(
@@ -230,15 +238,17 @@ async def confirmation(locale):
 
 
 async def anorhome_menu(locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
+    buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='anorhome_menu').order_by('ordering'):
         button = await keyboard_button.button
-        tg_button = types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=button.code)
-        keyboard.add(tg_button)
+        tg_button = types.KeyboardButton(getattr(button, f'text_{locale}'))
+        buttons.append(tg_button)
 
-    await add_back_inline_button(keyboard, locale)
+    keyboard.add(*buttons)
 
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 
@@ -249,21 +259,16 @@ async def services_or_vacancies(service_or_vacancy, locale, is_last=False):
         types.InlineKeyboardButton(getattr(button, f'text_{locale}'),
                                    callback_data=f'{button.code}:{service_or_vacancy.pk}')
     )
-
-    if is_last:
-        await add_back_inline_button(keyboard, locale)
-
     return keyboard
 
 
-async def apply(object_id, locale):
+async def apply(locale):
     button = await Button.get(code='apply')
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.row(
-        types.InlineKeyboardButton(getattr(button, f'text_{locale}'), callback_data=f'{button.code}:{object_id}')
+        types.KeyboardButton(getattr(button, f'text_{locale}'))
     )
-
-    await add_back_inline_button(keyboard, locale)
+    await add_back_reply_button(keyboard, locale)
     return keyboard
 
 

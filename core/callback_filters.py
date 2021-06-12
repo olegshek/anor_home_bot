@@ -9,5 +9,9 @@ async def callback_filter(query, keyboard_name):
     return query.data in buttons
 
 
-def is_digit(query):
+def inline_is_digit(query):
     return query.data.isdigit()
+
+
+def message_is_digit(message):
+    return message.text.isdigit()

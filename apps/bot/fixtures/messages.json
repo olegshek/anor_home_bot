@@ -1,1 +1,211 @@
-[{"model": "bot.message", "pk": 1, "fields": {"code": "greeting", "text": "Welcome", "text_ru": "Добро пожаловать", "text_uz": "Welcome", "text_en": "Welcome"}}, {"model": "bot.message", "pk": 2, "fields": {"code": "phone_number", "text": "Share your phone number", "text_ru": "Отправьте ваш номер телефона воспользовавшись кнопкой ниже", "text_uz": "Share your phone number", "text_en": "Share your phone number"}}, {"model": "bot.message", "pk": 7, "fields": {"code": "full_name", "text": "Send you full name", "text_ru": "Укажите ваше Ф.И.О", "text_uz": "Send you full name", "text_en": "Send you full name"}}, {"model": "bot.message", "pk": 8, "fields": {"code": "main_menu", "text": "Main menu", "text_ru": "Вы находитесь в главном меню", "text_uz": "Main menu", "text_en": "Main menu"}}, {"model": "bot.message", "pk": 16, "fields": {"code": "language_choice", "text": "Choose language", "text_ru": "Выберите язык", "text_uz": "Choose language", "text_en": "Choose language"}}, {"model": "bot.message", "pk": 20, "fields": {"code": "press_start", "text": "Press /start", "text_ru": "Нажмите /start", "text_uz": "Press /start", "text_en": "Press /start"}}, {"model": "bot.message", "pk": 21, "fields": {"code": "residence_choice", "text": "Choose the object", "text_ru": "Выберите объект", "text_uz": "Choose the object", "text_en": "Choose the object"}}, {"model": "bot.message", "pk": 22, "fields": {"code": "room_quantity", "text": "Choose the room quantity", "text_ru": "Выберите количетсво комнат", "text_uz": "Choose the room quantity", "text_en": "Choose the room quantity"}}, {"model": "bot.message", "pk": 23, "fields": {"code": "apartment_choice", "text": "Choose the square", "text_ru": "Выберите квадратуру", "text_uz": "Choose the square", "text_en": "Choose the square"}}, {"model": "bot.message", "pk": 24, "fields": {"code": "request_accepted", "text": "Request accepted", "text_ru": "Заявка принята", "text_uz": "Request accepted", "text_en": "Request accepted"}}, {"model": "bot.message", "pk": 25, "fields": {"code": "request_number", "text": "Request number:", "text_ru": "Номер заявки:", "text_uz": "Request number:", "text_en": "Request number:"}}, {"model": "bot.message", "pk": 26, "fields": {"code": "project_type", "text": "Choose a project type", "text_ru": "Выберите тип проекта", "text_uz": "Choose a project type", "text_en": "Choose a project type"}}, {"model": "bot.message", "pk": 27, "fields": {"code": "project_choice", "text": "Choose a project", "text_ru": "Выберите проект", "text_uz": "Choose a project", "text_en": "Choose a project"}}, {"model": "bot.message", "pk": 28, "fields": {"code": "floor_number", "text": "Choose the floor number", "text_ru": "Выберите этаж", "text_uz": "Choose the floor number", "text_en": "Choose the floor number"}}, {"model": "bot.message", "pk": 29, "fields": {"code": "room_quantity_info", "text": "Room quantity:", "text_ru": "Количество комнат:", "text_uz": "Room quantity:", "text_en": "Room quantity:"}}, {"model": "bot.message", "pk": 30, "fields": {"code": "empty_cart", "text": "Your cart is empty", "text_ru": "Выша корзина пуста", "text_uz": "Your cart is empty", "text_en": "Your cart is empty"}}, {"model": "bot.message", "pk": 64, "fields": {"code": "anorhome_menu", "text": "Anorhome menu", "text_ru": "Вы находитесь в меню Anorhome", "text_uz": "Anorhome menu", "text_en": "Anorhome menu"}}, {"model": "bot.message", "pk": 65, "fields": {"code": "cv", "text": "Send your cv as file", "text_ru": "Отправьте ваше резюме файлом", "text_uz": "Send your cv as file", "text_en": "Send your cv as file"}}, {"model": "bot.message", "pk": 67, "fields": {"code": "floor_number_message", "text": "Floor:", "text_ru": "Этаж:", "text_uz": "Floor:", "text_en": "Floor:"}}]
+[
+  {
+    "model": "bot.message",
+    "pk": 1,
+    "fields": {
+      "code": "greeting",
+      "text": "Welcome",
+      "text_ru": "Добро пожаловать",
+      "text_uz": "Welcome",
+      "text_en": "Welcome"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 2,
+    "fields": {
+      "code": "phone_number",
+      "text": "Share your phone number",
+      "text_ru": "Отправьте ваш номер телефона воспользовавшись кнопкой ниже",
+      "text_uz": "Share your phone number",
+      "text_en": "Share your phone number"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 7,
+    "fields": {
+      "code": "full_name",
+      "text": "Send you full name",
+      "text_ru": "Укажите ваше Ф.И.О",
+      "text_uz": "Send you full name",
+      "text_en": "Send you full name"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 8,
+    "fields": {
+      "code": "main_menu",
+      "text": "Main menu",
+      "text_ru": "Вы находитесь в главном меню",
+      "text_uz": "Main menu",
+      "text_en": "Main menu"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 16,
+    "fields": {
+      "code": "language_choice",
+      "text": "Choose language",
+      "text_ru": "Выберите язык",
+      "text_uz": "Choose language",
+      "text_en": "Choose language"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 20,
+    "fields": {
+      "code": "press_start",
+      "text": "Press /start",
+      "text_ru": "Нажмите /start",
+      "text_uz": "Press /start",
+      "text_en": "Press /start"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 21,
+    "fields": {
+      "code": "residence_choice",
+      "text": "Choose the object",
+      "text_ru": "Выберите объект",
+      "text_uz": "Choose the object",
+      "text_en": "Choose the object"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 22,
+    "fields": {
+      "code": "room_quantity",
+      "text": "Choose the room quantity",
+      "text_ru": "Выберите количетсво комнат",
+      "text_uz": "Choose the room quantity",
+      "text_en": "Choose the room quantity"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 23,
+    "fields": {
+      "code": "apartment_choice",
+      "text": "Choose the square",
+      "text_ru": "Выберите квадратуру",
+      "text_uz": "Choose the square",
+      "text_en": "Choose the square"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 24,
+    "fields": {
+      "code": "request_accepted",
+      "text": "Request accepted",
+      "text_ru": "Заявка принята",
+      "text_uz": "Request accepted",
+      "text_en": "Request accepted"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 25,
+    "fields": {
+      "code": "request_number",
+      "text": "Request number:",
+      "text_ru": "Номер заявки:",
+      "text_uz": "Request number:",
+      "text_en": "Request number:"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 26,
+    "fields": {
+      "code": "project_type",
+      "text": "Choose a project type",
+      "text_ru": "Выберите тип проекта",
+      "text_uz": "Choose a project type",
+      "text_en": "Choose a project type"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 27,
+    "fields": {
+      "code": "project_choice",
+      "text": "Choose a project",
+      "text_ru": "Выберите проект",
+      "text_uz": "Choose a project",
+      "text_en": "Choose a project"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 28,
+    "fields": {
+      "code": "floor_number",
+      "text": "Choose the floor number",
+      "text_ru": "Выберите этаж",
+      "text_uz": "Choose the floor number",
+      "text_en": "Choose the floor number"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 29,
+    "fields": {
+      "code": "room_quantity_info",
+      "text": "Room quantity:",
+      "text_ru": "Количество комнат:",
+      "text_uz": "Room quantity:",
+      "text_en": "Room quantity:"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 30,
+    "fields": {
+      "code": "empty_cart",
+      "text": "Your cart is empty",
+      "text_ru": "Выша корзина пуста",
+      "text_uz": "Your cart is empty",
+      "text_en": "Your cart is empty"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 64,
+    "fields": {
+      "code": "anorhome_menu",
+      "text": "Anorhome menu",
+      "text_ru": "Вы находитесь в меню Anorhome",
+      "text_uz": "Anorhome menu",
+      "text_en": "Anorhome menu"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 65,
+    "fields": {
+      "code": "cv",
+      "text": "Send your cv as file",
+      "text_ru": "Отправьте ваше резюме файлом",
+      "text_uz": "Send your cv as file",
+      "text_en": "Send your cv as file"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 67,
+    "fields": {
+      "code": "floor_number_message",
+      "text": "Floor:",
+      "text_ru": "Этаж:",
+      "text_uz": "Floor:",
+      "text_en": "Floor:"
+    }
+  }
+]

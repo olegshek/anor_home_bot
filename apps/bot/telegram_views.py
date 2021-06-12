@@ -132,6 +132,8 @@ async def back(user_id, state, locale, message_id=None):
                 photo = await vacancy.photo
                 keyboard = await keyboards.services_or_vacancies(vacancy, locale, is_last)
 
+                await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+
                 with open(photo.get_path(), 'rb') as photo_data:
                     await bot.send_photo(
                         user_id,
@@ -155,9 +157,11 @@ async def back(user_id, state, locale, message_id=None):
                 name = getattr(vacancy, f'name_{locale}')
                 description = getattr(vacancy, f'description_{locale}')
                 photo = await vacancy.photo
-                keyboard = await keyboards.apply(vacancy_id, locale)
+                keyboard = await keyboards.apply(locale)
                 message = f'<b>{name}</b>\n\n' \
                           f'{description}'
+
+                await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
 
                 with open(photo.get_path(), 'rb') as photo_data:
                     await bot.send_photo(
@@ -178,6 +182,8 @@ async def back(user_id, state, locale, message_id=None):
                 is_last = True if services.index(service) == services_len - 1 else False
                 photo = await service.photo
                 keyboard = await keyboards.services_or_vacancies(service, locale, is_last)
+
+                await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
 
                 with open(photo.get_path(), 'rb') as photo_data:
                     await bot.send_photo(
@@ -222,7 +228,8 @@ async def main_menu(query, locale, state):
         keyboard = await keyboards.project_types(locale)
         message = await messages.get_message('project_type', locale)
         await LeadForm.project_type.set()
-        return await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
+        await try_delete_message(user_id, message_id)
+        return await bot.send_message(user_id, message, reply_markup=keyboard)
 
     if data == 'change_language':
         await try_delete_message(user_id, message_id)
@@ -261,8 +268,10 @@ async def main_menu(query, locale, state):
         message = await messages.get_message('anorhome_menu', locale)
         keyboard = await keyboards.anorhome_menu(locale)
 
+        await try_delete_message(user_id, message_id)
+
         await CompanyForm.menu.set()
-        await bot.edit_message_text(message, user_id, message_id, reply_markup=keyboard)
+        await bot.send_message(user_id, message, reply_markup=keyboard)
 
 
 @dp.message_handler(keyboard_back, state='*')

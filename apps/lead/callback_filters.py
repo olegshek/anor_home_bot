@@ -1,6 +1,5 @@
-from apps.bot.tortoise_models import Button, KeyboardButtonsOrdering
-from apps.lead.tortoise_models import ResidentialProject, CommercialProject
-from core.filters import callback_filter
+from apps.bot.tortoise_models import Button
+from core.filters import message_keyboard_filter, message_button_filter
 
 
 async def language_choice(message):
@@ -10,9 +9,9 @@ async def language_choice(message):
     return message.text in [en_text, ru_text, uz_text]
 
 
-async def project_type(query):
-    return query.data in ['residential', 'commercial']
-
+async def project_type(message):
+    data =  await message_keyboard_filter(message, 'project_types')
+    return data
 
 def choose_button(query):
     data = query.data
@@ -21,9 +20,11 @@ def choose_button(query):
     return 'choose' in data
 
 
-async def project_menu(query):
-    return await callback_filter(query, 'residential_project_menu') or \
-           await callback_filter(query, 'commercial_project_menu')
+async def project_menu(message):
+    return not await message_button_filter(message, 'cart') and (
+            await message_keyboard_filter(message, 'residential_project_menu') or
+            await message_keyboard_filter(message, 'commercial_project_menu')
+    )
 
 
 def is_switch(query):
@@ -35,17 +36,22 @@ def add_to_cart(query):
     return 'add_to_cart' in query.data
 
 
-def cart(query):
-    return query.data == 'cart'
+async def cart(message):
+    data = await message_button_filter(message, 'cart')
+    return data
 
 
-def cart_menu(query):
+def cart_inline_menu(query):
     code = query.data.split(';')[0]
-    return code in ['remove_from_cart', 'consultation_request', 'continue_review']
+    return code == 'remove_from_cart'
 
 
-def confirm_button(query):
-    return 'confirm' in query.data
+async def cart_reply_menu(message):
+    return await message_keyboard_filter(message, 'cart_reply_menu')
+
+
+async def confirm_button(message):
+    return await message_button_filter(message, 'confirm')
 
 
 def is_duplex(query):

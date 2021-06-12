@@ -3,6 +3,7 @@ from django.conf import settings
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages
 from apps.bot.telegram_views import send_main_menu
+from apps.bot.tortoise_models import Button
 from apps.bot.utils import try_delete_message
 from apps.company import callback_filters
 from apps.company.states import CompanyForm
@@ -12,11 +13,11 @@ from apps.lead.callback_filters import choose_button
 from apps.lead.tortoise_models import Customer
 
 
-@dp.callback_query_handler(callback_filters.anorhome_menu, state=CompanyForm.menu.state)
-async def anorhome_menu(query, locale, state):
-    user_id = query.from_user.id
-    message_id = query.message.message_id
-    code = query.data
+@dp.message_handler(callback_filters.anorhome_menu, state=CompanyForm.menu.state, content_types=[ContentType.TEXT])
+async def anorhome_menu(message, locale, state):
+    user_id = message.from_user.id
+    message_id = message.message_id
+    code = (await Button.filter(**{f'text_{locale}': message.text}).first()).code
 
     if code == 'about_company':
         await try_delete_message(user_id, message_id)
@@ -58,6 +59,8 @@ async def anorhome_menu(query, locale, state):
             photo = await service.photo
             keyboard = await keyboards.services_or_vacancies(service, locale, is_last)
 
+            await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+
             with open(photo.get_path(), 'rb') as photo_data:
                 await bot.send_photo(
                     user_id,
@@ -77,6 +80,8 @@ async def anorhome_menu(query, locale, state):
             is_last = True if vacancies.index(vacancy) == vacancies_len - 1 else False
             photo = await vacancy.photo
             keyboard = await keyboards.services_or_vacancies(vacancy, locale, is_last)
+
+            await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
 
             with open(photo.get_path(), 'rb') as photo_data:
                 await bot.send_photo(
@@ -101,10 +106,13 @@ async def choose_service(query, locale, state):
     service = await Service.filter(id=service_id).first()
 
     if service:
+        async with state.proxy() as data:
+            data['service_id'] = service_id
+
         name = getattr(service, f'name_{locale}')
         description = getattr(service, f'description_{locale}')
         photo = await service.photo
-        keyboard = await keyboards.apply(service_id, locale)
+        keyboard = await keyboards.apply(locale)
         message = f'<b>{name}</b>\n\n' \
                   f'{description}'
 
@@ -131,10 +139,13 @@ async def choose_vacancy(query, locale, state):
     vacancy = await Vacancy.filter(id=vacancy_id).first()
 
     if vacancy:
+        async with state.proxy() as data:
+            data['vacancy_id'] = vacancy_id
+
         name = getattr(vacancy, f'name_{locale}')
         description = getattr(vacancy, f'description_{locale}')
         photo = await vacancy.photo
-        keyboard = await keyboards.apply(vacancy_id, locale)
+        keyboard = await keyboards.apply(locale)
         message = f'<b>{name}</b>\n\n' \
                   f'{description}'
 
@@ -150,13 +161,16 @@ async def choose_vacancy(query, locale, state):
         await CompanyForm.vacancy_detail.set()
 
 
-@dp.callback_query_handler(callback_filters.is_apply, state=CompanyForm.service_detail.state)
-async def apply_service(query, locale, state):
-    user_id = query.from_user.id
-    service_id = int(query.data.split(':')[1])
+@dp.message_handler(callback_filters.is_apply, state=CompanyForm.service_detail.state, content_types=[ContentType.TEXT])
+async def apply_service(message, locale, state):
+    user_id = message.from_user.id
+
+    async with state.proxy() as data:
+        service_id = data['service_id']
+
     request = await ServiceRequest.create(customer_id=user_id, service_id=service_id)
 
-    await try_delete_message(user_id, query.message.message_id)
+    await try_delete_message(user_id, message.message_id)
     message = await messages.get_message('request_accepted', locale)
     await bot.send_message(user_id, message)
     message = await messages.get_message('request_number', locale) + f' {request.number}'
@@ -166,22 +180,18 @@ async def apply_service(query, locale, state):
     await send_main_menu(customer, locale, state)
 
 
-@dp.callback_query_handler(callback_filters.is_apply, state=CompanyForm.vacancy_detail.state)
-async def apply_vacancy(query, locale, state):
-    user_id = query.from_user.id
-    vacancy_id = int(query.data.split(':')[1])
+@dp.message_handler(callback_filters.is_apply, state=CompanyForm.vacancy_detail.state, content_types=[ContentType.TEXT])
+async def apply_vacancy(message, locale, state):
+    user_id = message.from_user.id
+    message_id = message.message_id
 
-    async with state.proxy() as data:
-        data['vacancy_id'] = vacancy_id
-
-    await try_delete_message(user_id, query.message.message_id)
-
+    await try_delete_message(user_id, message.message_id)
     message = await messages.get_message('cv', locale)
     keyboard = await keyboards.back_keyboard(locale)
 
     await CompanyForm.cv.set()
 
-    await try_delete_message(user_id, query.message.message_id)
+    await try_delete_message(user_id, message_id)
     await bot.send_message(user_id, message, reply_markup=keyboard)
 
 
