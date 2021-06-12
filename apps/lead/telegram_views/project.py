@@ -98,7 +98,7 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     project_objects = object_model.filter(
         project__id=project_id,
         **{number_field_name: room_quantity_or_floor_number}
-    ).order_by('square')
+    ).order_by('id')
 
     if object_model == Apartment:
         project_objects = project_objects.exclude(duplex_id__isnull=False)
@@ -118,9 +118,9 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
                 project__id=project_id,
                 **{
                     number_field_name: room_quantity_or_floor_number,
-                    f'square__{option}': current_object.square
+                    f'id__{option}': current_object.square
                 }
-            ).exclude(**exclude_data).order_by('square').first()
+            ).exclude(**exclude_data).order_by('id').first()
 
     if not project_object:
         return
