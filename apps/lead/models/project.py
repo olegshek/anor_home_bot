@@ -5,8 +5,8 @@ from apps.file.models import Photo, Document
 
 
 class Location(models.Model):
-    latitude = models.FloatField(null=True, verbose_name=_('Latitude'))
-    longitude = models.FloatField(null=True, verbose_name=_('Longitude'))
+    latitude = models.FloatField(null=True, blank=True, verbose_name=_('Latitude'))
+    longitude = models.FloatField(null=True, blank=True, verbose_name=_('Longitude'))
     address = models.CharField(max_length=250, null=True)
     description = models.CharField(max_length=4000, verbose_name=_('Description'))
 

@@ -32,7 +32,9 @@ class LocationForm(forms.ModelForm):
             'description_en',
             'description_ru',
             'description_uz',
-            'address'
+            'address',
+            'latitude',
+            'longitude'
         )
 
 
