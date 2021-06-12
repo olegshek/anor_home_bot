@@ -114,13 +114,18 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
             if object_model == ApartmentTransaction:
                 exclude_data['duplex_id__isnull'] = False
 
-            project_object = await object_model.filter(
+            project_objects = object_model.filter(
                 project__id=project_id,
                 **{
                     number_field_name: room_quantity_or_floor_number,
                     f'id__{option}': current_object.id
                 }
-            ).exclude(**exclude_data).order_by('id').first()
+            ).exclude(**exclude_data).order_by('id')
+
+            if option == 'gte':
+                project_object = await project_objects.first()
+            else:
+                project_object = (await project_object)[-1]
 
     if not project_object:
         return
