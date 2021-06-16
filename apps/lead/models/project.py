@@ -92,7 +92,8 @@ class Apartment(models.Model):
     description = models.CharField(max_length=198, verbose_name=_('Description'))
     floor_number = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('Floor number'))
 
-    photos = models.ManyToManyField(Photo, related_name='apartments', verbose_name=_('Photos'))
+    photo = models.ForeignKey(Photo, on_delete=models.SET_NULL, null=True, related_name='apartments',
+                              verbose_name=_('Photo'))
 
     class Meta:
         verbose_name = _('Apartment')
@@ -109,7 +110,8 @@ class Store(models.Model):
     square = models.FloatField(verbose_name=_('Square'))
     description = models.CharField(max_length=198, verbose_name=_('Description'))
 
-    photos = models.ManyToManyField(Photo, related_name='stores', verbose_name=_('Photos'))
+    photo = models.ForeignKey(Photo, on_delete=models.SET_NULL, null=True, related_name='stores',
+                              verbose_name=_('Photo'))
 
     class Meta:
         verbose_name = _('Store')

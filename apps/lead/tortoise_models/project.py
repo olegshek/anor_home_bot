@@ -86,8 +86,7 @@ class Apartment(models.Model):
 
     floor_number = fields.IntField(null=True)
 
-    photos = fields.ManyToManyField('file.Photo', related_name='apartments', through='lead_apartment_photos',
-                                    backward_key='apartment_id')
+    photo = fields.ForeignKeyField('file.Photo', on_delete=fields.SET_NULL, null=True, related_name='apartments')
 
     class Meta:
         table = f'{app_name}_apartment'
@@ -101,8 +100,7 @@ class Store(models.Model):
     description_en = fields.CharField(max_length=198)
     description_uz = fields.CharField(max_length=198)
 
-    photos = fields.ManyToManyField('file.Photo', related_name='stores', through='lead_store_photos',
-                                    backward_key='store_id')
+    photo = fields.ForeignKeyField('file.Photo', on_delete=fields.SET_NULL, null=True, related_name='stores')
 
     class Meta:
         table = f'{app_name}_store'

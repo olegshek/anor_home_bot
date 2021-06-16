@@ -53,7 +53,7 @@ class ApartmentForm(forms.ModelForm):
             'description_en',
             'description_ru',
             'description_uz',
-            'photos'
+            'photo'
         )
 
     def clean(self):
@@ -87,5 +87,5 @@ class StoreForm(forms.ModelForm):
             'description_en',
             'description_ru',
             'description_uz',
-            'photos'
+            'photo'
         )

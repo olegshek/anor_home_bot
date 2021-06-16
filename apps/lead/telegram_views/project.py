@@ -137,20 +137,18 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
               f'{getattr(project_object, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects, projects_quantity,
                                                    project_number)
-    photos = await project_object.photos
-    media_group = types.MediaGroup()
-
-    for photo in photos:
-        media_group.attach_photo(types.InputFile(photo.get_path()))
+    photo = await project_object.photo
 
     await try_delete_message(user_id, message_id)
 
     await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart(locale))
     await LeadForm.project_object_choice.set()
 
-    sent_group = await bot.send_media_group(user_id, media_group)
-    await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=sent_group[0].message_id,
-                           parse_mode='HTML')
+    if photo:
+        with open(photo.get_path(), 'rb') as photo_file:
+            return await bot.send_photo(user_id, photo_file, caption=message, reply_markup=keyboard, parse_mode='HTML')
+
+    await bot.send_message(user_id, message, reply_markup=keyboard, parse_mode='HTML')
 
 
 async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, lookups=None, apartment_id=None,
@@ -189,19 +187,17 @@ async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, l
               f'{getattr(apartment, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(apartment.id, locale, added_duplexes, duplexes_quantity,
                                                    duplex_number, True, apartment.floor_number)
-    photos = await apartment.photos
-    media_group = types.MediaGroup()
-
-    for photo in photos:
-        media_group.attach_photo(types.InputFile(photo.get_path()))
+    photo = await apartment.photo
 
     await try_delete_message(user_id, message_id)
-
-    sent_group = await bot.send_media_group(user_id, media_group)
-
+    await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart(locale))
     await LeadForm.project_object_choice.set()
-    await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=sent_group[0].message_id,
-                           parse_mode='HTML')
+
+    if photo:
+        with open(photo.get_path(), 'rb') as photo_file:
+            return await bot.send_photo(user_id, photo_file, caption=message, reply_markup=keyboard, parse_mode='HTML')
+
+    await bot.send_message(user_id, message, reply_markup=keyboard, parse_mode='HTML')
 
 
 @dp.message_handler(callback_filters.project_type, state=LeadForm.project_type.state, content_types=[ContentType.TEXT])

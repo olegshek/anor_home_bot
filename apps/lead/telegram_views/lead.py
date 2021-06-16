@@ -130,24 +130,18 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
 
     keyboard = await keyboards.cart_inline_menu(transaction.id, locale, transactions_quantity, transaction_number)
 
-    reply_to_message_id = None
     await try_delete_message(user_id, message_id)
-
     await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart_reply_menu(locale))
+    await LeadForm.cart.set()
 
     if transaction_model != DuplexTransaction:
-        photos = await project_object.photos
-        media_group = types.MediaGroup()
+        photo = await project_object.photo
+        if photo:
+            with open(photo.get_path(), 'rb') as photo_file:
+                return await bot.send_photo(user_id, photo_file, caption=message, reply_markup=keyboard,
+                                            parse_mode='HTML')
 
-        for photo in photos:
-            media_group.attach_photo(types.InputFile(photo.get_path()))
-
-        sent_group = await bot.send_media_group(user_id, media_group)
-        reply_to_message_id = sent_group[0].message_id
-
-    await LeadForm.cart.set()
-    await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=reply_to_message_id,
-                           parse_mode='HTML')
+    await bot.send_message(user_id, message, reply_markup=keyboard, parse_mode='HTML')
 
 
 @dp.callback_query_handler(callback_filters.add_to_cart, state=LeadForm.project_object_choice.state)
@@ -215,7 +209,7 @@ async def process_cart_inline_menu(query, locale, state):
 
         transaction_id = int(query_data[1])
         await transaction_model.filter(id=transaction_id).delete()
-        return await send_cart_menu(user_id, query.message.message_id, locale, state)
+        return await send_cart_menu(user_id, message_id, locale, state)
 
 
 @dp.message_handler(callback_filters.cart_reply_menu, state=LeadForm.cart.state, content_types=[ContentType.TEXT])

@@ -20,14 +20,12 @@ class LocationAdmin(TranslationAdmin):
 class ApartmentAdmin(admin.ModelAdmin):
     form = ApartmentForm
     list_display = ('__str__', 'project', 'room_quantity', 'square', 'duplex', 'floor_number')
-    filter_horizontal = ('photos', )
     list_filter = ('project', 'duplex', 'room_quantity')
 
 
 class StoreAdmin(TranslationAdmin):
     form = StoreForm
     list_display = ('__str__', 'project', 'square', 'floor_number')
-    filter_horizontal = ('photos',)
     list_filter = ('project',)
 
 
