@@ -145,11 +145,10 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
 
     await try_delete_message(user_id, message_id)
 
-    sent_group = await bot.send_media_group(user_id, media_group)
-
     await bot.send_message(user_id, '✔️', reply_markup=await keyboards.cart(locale))
-
     await LeadForm.project_object_choice.set()
+
+    sent_group = await bot.send_media_group(user_id, media_group)
     await bot.send_message(user_id, message, reply_markup=keyboard, reply_to_message_id=sent_group[0].message_id,
                            parse_mode='HTML')
 
