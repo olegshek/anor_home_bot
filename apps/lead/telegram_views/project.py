@@ -125,7 +125,8 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
             if option == 'gte':
                 project_object = await project_objects_cor.first()
             else:
-                project_object = (await project_objects_cor)[-1]
+                objects = (await project_objects_cor)
+                project_object = objects[-1] if objects else None
 
     if not project_object:
         return
