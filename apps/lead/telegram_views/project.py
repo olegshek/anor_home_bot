@@ -266,7 +266,7 @@ async def process_project_menu(message, state, locale):
                     parse_mode='HTML'
                 )
 
-        if location.latitude and location.longitude:
+        if location and location.latitude and location.longitude:
             location_message = await bot.send_location(user_id, location.latitude, location.longitude)
             await bot.send_message(user_id, getattr(location, f'description_{locale}'),
                                    reply_to_message_id=location_message.message_id)
