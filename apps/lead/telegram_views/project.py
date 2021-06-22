@@ -241,7 +241,6 @@ async def process_project_menu(message, state, locale):
         await send_room_quantity_or_floor_number(user_id, message_id, locale, project_id, project_type)
 
     if code == 'about_project':
-        description = getattr(project, f'description_{locale}')
         photos = await project.photos.all()
         documents = await project.documents.all()
         location = await project.location
@@ -254,7 +253,8 @@ async def process_project_menu(message, state, locale):
                     user_id,
                     photo_data,
                     caption=getattr(photo, f'description_{locale}'),
-                    parse_mode='HTML'
+                    parse_mode='HTML',
+                    reply_markup=await keyboards.back_keyboard(locale)
                 )
 
         for document in documents:
@@ -263,15 +263,18 @@ async def process_project_menu(message, state, locale):
                     user_id,
                     document_data,
                     caption=getattr(document, f'description_{locale}'),
-                    parse_mode='HTML'
+                    parse_mode='HTML',
+                    reply_markup=await keyboards.back_keyboard(locale)
                 )
 
         if location and location.latitude and location.longitude:
             location_message = await bot.send_location(user_id, location.latitude, location.longitude)
-            await bot.send_message(user_id, getattr(location, f'description_{locale}'),
-                                   reply_to_message_id=location_message.message_id)
-
-        await bot.send_message(user_id, description, reply_markup=await keyboards.back_keyboard(locale))
+            await bot.send_message(
+                user_id,
+                getattr(location, f'description_{locale}'),
+                reply_to_message_id=location_message.message_id,
+                reply_markup=await keyboards.back_keyboard(locale)
+            )
 
         await LeadForm.about_project.set()
 
