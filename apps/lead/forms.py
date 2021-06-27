@@ -8,6 +8,10 @@ class ProjectForm(forms.ModelForm):
     description_ru = forms.CharField(max_length=4000, widget=forms.Textarea)
     description_uz = forms.CharField(max_length=4000, widget=forms.Textarea)
 
+    about_en = forms.CharField(max_length=4000, widget=forms.Textarea)
+    about_ru = forms.CharField(max_length=4000, widget=forms.Textarea)
+    about_uz = forms.CharField(max_length=4000, widget=forms.Textarea)
+
     class Meta:
         fields = (
             'name',
@@ -19,7 +23,9 @@ class ProjectForm(forms.ModelForm):
             'documents',
             'location',
             'catalogue_documents',
-            'about'
+            'about_en',
+            'about_ru',
+            'about_uz'
         )
 
 
