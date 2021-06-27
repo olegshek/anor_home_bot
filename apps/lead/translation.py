@@ -13,12 +13,12 @@ class LocationOptions(TranslationOptionsMixin):
 
 @translator.register(ResidentialProject)
 class ResidentialProjectOptions(TranslationOptionsMixin):
-    fields = ('description',)
+    fields = ('description', 'about')
 
 
 @translator.register(CommercialProject)
 class CommercialProjectOptions(TranslationOptionsMixin):
-    fields = ('description',)
+    fields = ('description', 'about')
 
 
 @translator.register(Apartment)

@@ -19,6 +19,9 @@ class Project(models.Model):
     description_ru = fields.CharField(max_length=150)
     description_uz = fields.CharField(max_length=150)
     description_en = fields.CharField(max_length=150)
+    about_ru = fields.CharField(max_length=4000, null=True)
+    about_en = fields.CharField(max_length=4000, null=True)
+    about_uz = fields.CharField(max_length=4000, null=True)
 
     class Meta:
         abstract = True

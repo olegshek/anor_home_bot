@@ -18,7 +18,8 @@ class ProjectForm(forms.ModelForm):
             'photos',
             'documents',
             'location',
-            'catalogue_documents'
+            'catalogue_documents',
+            'about'
         )
 
 

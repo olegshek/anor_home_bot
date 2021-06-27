@@ -1,4 +1,3 @@
-from aiogram import types
 from aiogram.types import ContentType
 
 from apps.bot import dispatcher as dp, bot, keyboards
@@ -273,6 +272,15 @@ async def process_project_menu(message, state, locale):
                 user_id,
                 getattr(location, f'description_{locale}'),
                 reply_to_message_id=location_message.message_id,
+                reply_markup=await keyboards.back_keyboard(locale)
+            )
+
+        about_project = getattr(project, f'about_{locale}')
+        if about_project:
+            await bot.send_message(
+                user_id,
+                about_project,
+                parse_mode='HTML',
                 reply_markup=await keyboards.back_keyboard(locale)
             )
 

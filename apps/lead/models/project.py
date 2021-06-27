@@ -21,6 +21,7 @@ class Location(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=48, verbose_name=_('Name'))
     description = models.CharField(max_length=150, verbose_name=_('Description'))
+    about = models.CharField(max_length=4000, null=True, verbose_name=_('About project'))
 
     class Meta:
         abstract = True
