@@ -1,5 +1,5 @@
 from apps.bot.tortoise_models import Button
-from core.filters import message_keyboard_filter, message_button_filter
+from core.filters import message_keyboard_filter, message_button_filter, callback_filter
 
 
 async def language_choice(message):
@@ -10,8 +10,9 @@ async def language_choice(message):
 
 
 async def project_type(message):
-    data =  await message_keyboard_filter(message, 'project_types')
+    data = await message_keyboard_filter(message, 'project_types')
     return data
+
 
 def choose_button(query):
     data = query.data
@@ -60,3 +61,7 @@ def is_duplex(query):
 
 def is_floor_number_switch(query):
     return 'floor_number__gte' in query.data or 'floor_number__lte' in query.data
+
+
+async def is_return_menu(message):
+    return await message_button_filter(message, 'return_to_main_menu')

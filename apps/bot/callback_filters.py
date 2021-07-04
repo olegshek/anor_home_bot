@@ -1,5 +1,6 @@
 from apps.bot.tortoise_models import Button
 from core.callback_filters import callback_filter
+from core.filters import message_keyboard_filter
 
 
 async def keyboard_back(message):
@@ -22,5 +23,6 @@ async def message_is_not_back(message):
     return message.text not in [getattr(back_button, f'text_{locale}') for locale in ['ru', 'uz', 'en']]
 
 
-async def main_menu(query):
-    return await callback_filter(query, 'main_menu')
+async def main_menu(message):
+    res = await message_keyboard_filter(message, 'main_menu')
+    return res

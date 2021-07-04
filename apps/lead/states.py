@@ -17,3 +17,4 @@ class LeadForm(StatesGroup):
     lead_confirmation = State()
     about_project = State()
     catalogue = State()
+    subscribe_menu = State()

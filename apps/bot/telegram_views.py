@@ -5,6 +5,7 @@ from apps.bot import dispatcher as dp, messages, bot
 from apps.bot import keyboards
 from apps.bot.callback_filters import keyboard_back, inline_back
 from apps.bot.states import BotForm
+from apps.bot.tortoise_models import Button
 from apps.bot.utils import try_delete_message
 from apps.company.states import CompanyForm
 from apps.company.tortoise_models import Vacancy, Service
@@ -218,27 +219,23 @@ async def start(message: types.Message, locale):
     await send_main_menu(customer, locale)
 
 
-@dp.callback_query_handler(callback_filters.main_menu, state=BotForm.main_menu.state)
-async def main_menu(query, locale, state):
-    user_id = query.from_user.id
-    data = query.data
-    message_id = query.message.message_id
+@dp.message_handler(callback_filters.main_menu, state=BotForm.main_menu.state)
+async def main_menu(message, locale, state):
+    user_id = message.from_user.id
+    code = (await Button.filter(**{f'text_{locale}': message.text}).first()).code
 
-    if data == 'projects':
+    if code == 'projects':
         keyboard = await keyboards.project_types(locale)
         message = await messages.get_message('project_type', locale)
         await LeadForm.project_type.set()
-        await try_delete_message(user_id, message_id)
         return await bot.send_message(user_id, message, reply_markup=keyboard)
 
-    if data == 'change_language':
-        await try_delete_message(user_id, message_id)
+    if code == 'change_language':
         await CustomerForm.language_choice.set()
         return await bot.send_message(user_id, await messages.get_message('language_choice', locale),
                                       reply_markup=await keyboards.language_choice(locale, True))
 
-    if data == 'contacts':
-        await try_delete_message(user_id, message_id)
+    if code == 'contacts':
         contact_text = await ContactText.first()
         contact_photos = await ContactPhoto.all()
         contact_location = await ContactLocation.first()
@@ -264,11 +261,9 @@ async def main_menu(query, locale, state):
 
         await BotForm.contacts.set()
 
-    if data == 'anorhome':
+    if code == 'anorhome':
         message = await messages.get_message('anorhome_menu', locale)
         keyboard = await keyboards.anorhome_menu(locale)
-
-        await try_delete_message(user_id, message_id)
 
         await CompanyForm.menu.set()
         await bot.send_message(user_id, message, reply_markup=keyboard)

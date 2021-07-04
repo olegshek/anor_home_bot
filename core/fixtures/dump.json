@@ -1,0 +1,13 @@
+[
+  {
+    "model": "bot.button",
+    "pk": 65,
+    "fields": {
+      "code": "return_to_main_menu",
+      "text": "Return to main menu",
+      "text_ru": "Вернуться в главное меню",
+      "text_uz": "Return to main menu",
+      "text_en": "Return to main menu"
+    }
+  }
+]

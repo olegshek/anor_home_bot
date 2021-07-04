@@ -1,4 +1,3 @@
-from aiogram import types
 from aiogram.types import ContentType
 
 from apps.bot import dispatcher as dp, bot, keyboards, messages
@@ -6,6 +5,7 @@ from apps.bot.telegram_views import send_main_menu
 from apps.bot.tortoise_models import Button
 from apps.bot.utils import try_delete_message
 from apps.lead import callback_filters
+from apps.lead.callback_filters import is_return_menu
 from apps.lead.states import LeadForm
 from apps.lead.telegram_views.project import send_project_object, send_project_choice, send_duplex, send_project_menu
 from apps.lead.tortoise_models import ApartmentTransaction, StoreTransaction, Lead, Customer, Apartment
@@ -287,9 +287,15 @@ async def confirm_lead(message, locale, state):
         await DuplexTransaction.filter(customer_id=user_id, lead_id__isnull=True).update(lead_id=lead.id)
 
     message = await messages.get_message('request_accepted', locale)
-    await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
+    await bot.send_message(user_id, message, reply_markup=await keyboards.return_to_main_menu(locale))
     message = await messages.get_message('request_number', locale) + f' {lead.number}'
-    await bot.send_message(user_id, message, reply_markup=keyboards.remove_keyboard)
+    await bot.send_message(user_id, message, reply_markup=await keyboards.subscribe_menu(locale))
 
+    await LeadForm.subscribe_menu.set()
+
+
+@dp.message_handler(is_return_menu, state=LeadForm.subscribe_menu.state)
+async def return_to_main_menu(message, locale, state):
+    user_id = message.from_user.id
     customer = await Customer.get(id=user_id)
     await send_main_menu(customer, locale, state)

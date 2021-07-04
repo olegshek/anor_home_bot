@@ -58,16 +58,12 @@ async def phone_number(locale):
 
 
 async def main_menu(locale):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
     buttons = []
     for keyboard_button in await KeyboardButtonsOrdering.filter(keyboard__code='main_menu').order_by('ordering'):
         button = await keyboard_button.button
-        tg_button = types.InlineKeyboardButton(
-            getattr(button, f'text_{locale}'),
-            callback_data=button.code,
-            url=settings.COMPANY_CHANNEL_URL if button.code == 'subscribe_channel' else None
-        )
+        tg_button = types.KeyboardButton(getattr(button, f'text_{locale}'))
         buttons.append(tg_button)
 
     keyboard.add(*buttons)
@@ -288,6 +284,24 @@ async def lead_request(apartment_id, locale):
     )
     await add_back_inline_button(keyboard, locale)
 
+    return keyboard
+
+
+async def subscribe_menu(locale):
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    subscribe_button = await Button.get(code='subscribe_channel')
+    keyboard.add(types.KeyboardButton(
+            getattr(subscribe_button, f'text_{locale}'),
+            callback_data=subscribe_button.code,
+            url=settings.COMPANY_CHANNEL_URL
+        ))
+    return keyboard
+
+
+async def return_to_main_menu(locale):
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    return_button = await Button.get(code='return_to_main_menu')
+    keyboard.add(types.KeyboardButton(getattr(return_button, f'text_{locale}')))
     return keyboard
 
 
