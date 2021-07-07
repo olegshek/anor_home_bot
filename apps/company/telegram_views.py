@@ -25,18 +25,17 @@ async def anorhome_menu(message, locale, state):
         company_photos = await CompanyPhoto.all()
         company_documents = await CompanyDocument.all()
 
-        await bot.send_message(user_id, getattr(company_text, f'text_{locale}'),
-                               reply_markup=await keyboards.back_keyboard(locale))
-
         for company_photo in company_photos:
             photo = await company_photo.photo
             with open(photo.get_path(), 'rb') as photo_data:
                 await bot.send_photo(
                     user_id,
                     photo_data,
-                    caption=getattr(photo, f'description_{locale}'),
                     parse_mode='HTML'
                 )
+
+        await bot.send_message(user_id, getattr(company_text, f'text_{locale}'),
+                               reply_markup=await keyboards.back_keyboard(locale))
 
         for company_document in company_documents:
             photo = await company_document.document

@@ -251,7 +251,6 @@ async def process_project_menu(message, state, locale):
                 await bot.send_photo(
                     user_id,
                     photo_data,
-                    caption=getattr(photo, f'description_{locale}'),
                     parse_mode='HTML',
                     reply_markup=await keyboards.back_keyboard(locale)
                 )
