@@ -133,7 +133,7 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     project_ids = await project_objects.values_list('id', flat=True)
     project_number = project_ids.index(project_object.id) + 1
     projects_quantity = len(project_ids)
-    message = f'<b>{project_object.square}m</b>\n\n' \
+    message = f'<b>{project_object.square} м2</b>\n\n' \
               f'{getattr(project_object, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects, projects_quantity,
                                                    project_number)
@@ -183,7 +183,7 @@ async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, l
     duplex_number = duplex_ids.index(duplex.id) + 1
     duplexes_quantity = len(duplex_ids)
 
-    message = f'<b>{apartment.square}m</b>\n\n' \
+    message = f'<b>{apartment.square} м2</b>\n\n' \
               f'{getattr(apartment, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(apartment.id, locale, added_duplexes, duplexes_quantity,
                                                    duplex_number, True, apartment.floor_number)
@@ -246,11 +246,14 @@ async def process_project_menu(message, state, locale):
 
         await try_delete_message(user_id, message_id)
 
+        about_project = getattr(project, f'about_{locale}')
+
         for photo in photos:
             with open(photo.get_path(), 'rb') as photo_data:
                 await bot.send_photo(
                     user_id,
                     photo_data,
+                    caption=about_project,
                     parse_mode='HTML',
                     reply_markup=await keyboards.back_keyboard(locale)
                 )
@@ -271,15 +274,6 @@ async def process_project_menu(message, state, locale):
                 user_id,
                 getattr(location, f'description_{locale}'),
                 reply_to_message_id=location_message.message_id,
-                reply_markup=await keyboards.back_keyboard(locale)
-            )
-
-        about_project = getattr(project, f'about_{locale}')
-        if about_project:
-            await bot.send_message(
-                user_id,
-                about_project,
-                parse_mode='HTML',
                 reply_markup=await keyboards.back_keyboard(locale)
             )
 
