@@ -19,8 +19,6 @@ async def language_choice_processing(message, locale, state):
     language = en_button.code if text == en_button.text_en else ru_button.code if text == ru_button.text_ru else 'uz'
     customer.language = language
     await customer.save()
-
-    await bot.send_message(user_id, '✔', reply_markup=keyboards.remove_keyboard)
     await send_main_menu(customer, language, state)
 
 
@@ -34,7 +32,6 @@ async def phone_number_save(message, locale, state):
         customer.phone_number = contact.phone_number
         await customer.save()
 
-    await bot.send_message(user_id, '✔', reply_markup=keyboards.remove_keyboard)
     await send_main_menu(customer, locale, state)
 
 
@@ -47,5 +44,4 @@ async def full_name_save(message, locale, state):
     customer.full_name = full_name
     await customer.save()
 
-    await bot.send_message(user_id, '✔', reply_markup=keyboards.remove_keyboard)
     await send_main_menu(customer, locale, state)
