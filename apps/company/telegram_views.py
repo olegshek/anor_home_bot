@@ -74,12 +74,12 @@ async def anorhome_menu(message, locale, state):
         vacancies = await Vacancy.all()
         vacancies_len = len(vacancies)
 
+        await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+
         for vacancy in vacancies:
             is_last = True if vacancies.index(vacancy) == vacancies_len - 1 else False
             photo = await vacancy.photo
             keyboard = await keyboards.services_or_vacancies(vacancy, locale, is_last)
-
-            await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
 
             with open(photo.get_path(), 'rb') as photo_data:
                 await bot.send_photo(
