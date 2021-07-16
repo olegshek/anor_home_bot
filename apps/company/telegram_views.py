@@ -54,7 +54,7 @@ async def anorhome_menu(message, locale, state):
         services_len = len(services)
         await bot.send_message(
             user_id,
-            messages.get_message('services', locale),
+            await messages.get_message('services', locale),
             reply_markup=await keyboards.back_keyboard(locale)
         )
 
@@ -80,7 +80,7 @@ async def anorhome_menu(message, locale, state):
 
         await bot.send_message(
             user_id,
-            messages.get_message('vacancies', locale),
+            await messages.get_message('vacancies', locale),
             reply_markup=await keyboards.back_keyboard(locale)
         )
 

@@ -130,7 +130,7 @@ async def back(user_id, state, locale, message_id=None):
 
             await bot.send_message(
                 user_id,
-                messages.get_message('vacancies', locale),
+                await messages.get_message('vacancies', locale),
                 reply_markup=await keyboards.back_keyboard(locale)
             )
 
