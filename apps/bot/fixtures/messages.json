@@ -229,5 +229,16 @@
       "text_uz": "Select vacancy",
       "text_en": "Select vacancy"
     }
+  },
+  {
+    "model": "bot.message",
+    "pk": 70,
+    "fields": {
+      "code": "square",
+      "text": "Square:",
+      "text_ru": "Площадь:",
+      "text_uz": "Square:",
+      "text_en": "Square:"
+    }
   }
 ]
