@@ -128,7 +128,11 @@ async def back(user_id, state, locale, message_id=None):
             vacancies = await Vacancy.all()
             vacancies_len = len(vacancies)
 
-            await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+            await bot.send_message(
+                user_id,
+                messages.get_message('vacancies', locale),
+                reply_markup=await keyboards.back_keyboard(locale)
+            )
 
             for vacancy in vacancies:
                 is_last = True if vacancies.index(vacancy) == vacancies_len - 1 else False

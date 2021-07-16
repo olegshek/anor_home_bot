@@ -52,7 +52,11 @@ async def anorhome_menu(message, locale, state):
     if code == 'corporate_customer':
         services = await Service.all()
         services_len = len(services)
-        await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+        await bot.send_message(
+            user_id,
+            messages.get_message('services', locale),
+            reply_markup=await keyboards.back_keyboard(locale)
+        )
 
         for service in services:
             is_last = True if services.index(service) == services_len - 1 else False
@@ -74,7 +78,11 @@ async def anorhome_menu(message, locale, state):
         vacancies = await Vacancy.all()
         vacancies_len = len(vacancies)
 
-        await bot.send_message(user_id, '✔️', reply_markup=await keyboards.back_keyboard(locale))
+        await bot.send_message(
+            user_id,
+            messages.get_message('vacancies', locale),
+            reply_markup=await keyboards.back_keyboard(locale)
+        )
 
         for vacancy in vacancies:
             is_last = True if vacancies.index(vacancy) == vacancies_len - 1 else False

@@ -123,7 +123,7 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
         duplex_name = getattr(await Button.get(code='duplex'), f'text_{locale}')
         message += f'{duplex_name}</b>\n\n'
     else:
-        message += f'{project_object.square}m</b>\n\n'
+        message += f'{project_object.square} м2</b>\n\n'
 
     if transaction_model != DuplexTransaction:
         message += f'{getattr(project_object, f"description_{locale}")}'

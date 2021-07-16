@@ -43,7 +43,7 @@ class CompanyDocument(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.CharField(max_length=200, verbose_name=_('Description'))
+    description = models.CharField(max_length=3000, verbose_name=_('Description'))
     photo = models.OneToOneField(Photo, on_delete=models.RESTRICT, related_name='service', verbose_name=_('Photo'))
 
     class Meta:
@@ -56,7 +56,7 @@ class Service(models.Model):
 
 class Vacancy(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    description = models.CharField(max_length=200, verbose_name=_('Description'))
+    description = models.CharField(max_length=3000, verbose_name=_('Description'))
     photo = models.OneToOneField(Photo, on_delete=models.RESTRICT, related_name='vacancy', verbose_name=_('Photo'))
 
     class Meta:
