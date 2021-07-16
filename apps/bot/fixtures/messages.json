@@ -207,5 +207,27 @@
       "text_uz": "Floor:",
       "text_en": "Floor:"
     }
+  },
+  {
+    "model": "bot.message",
+    "pk": 68,
+    "fields": {
+      "code": "services",
+      "text": "Select a service",
+      "text_ru": "Выберите услугу",
+      "text_uz": "Select a service",
+      "text_en": "Select a service"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 69,
+    "fields": {
+      "code": "vacancies",
+      "text": "Select vacancy",
+      "text_ru": "Выберите выкансию",
+      "text_uz": "Select vacancy",
+      "text_en": "Select vacancy"
+    }
   }
 ]

@@ -1,13 +1,24 @@
 [
   {
-    "model": "bot.button",
-    "pk": 65,
+    "model": "bot.message",
+    "pk": 68,
     "fields": {
-      "code": "return_to_main_menu",
-      "text": "Return to main menu",
-      "text_ru": "Вернуться в главное меню",
-      "text_uz": "Return to main menu",
-      "text_en": "Return to main menu"
+      "code": "services",
+      "text": "Select a service",
+      "text_ru": "Выберите услугу",
+      "text_uz": "Select a service",
+      "text_en": "Select a service"
+    }
+  },
+  {
+    "model": "bot.message",
+    "pk": 69,
+    "fields": {
+      "code": "vacancies",
+      "text": "Select vacancy",
+      "text_ru": "Выберите выкансию",
+      "text_uz": "Select vacancy",
+      "text_en": "Select vacancy"
     }
   }
 ]
