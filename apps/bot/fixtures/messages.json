@@ -240,5 +240,16 @@
       "text_uz": "Square:",
       "text_en": "Square:"
     }
+  },
+  {
+    "model": "bot.message",
+    "pk": 71,
+    "fields": {
+      "code": "project",
+      "text": "Project:",
+      "text_ru": "Проект:",
+      "text_uz": "Project:",
+      "text_en": "Project:"
+    }
   }
 ]

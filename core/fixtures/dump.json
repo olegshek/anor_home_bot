@@ -1,13 +1,13 @@
 [
   {
     "model": "bot.message",
-    "pk": 70,
+    "pk": 71,
     "fields": {
-      "code": "square",
-      "text": "Square:",
-      "text_ru": "Площадь:",
-      "text_uz": "Square:",
-      "text_en": "Square:"
+      "code": "project",
+      "text": "Project:",
+      "text_ru": "Проект:",
+      "text_uz": "Project:",
+      "text_en": "Project:"
     }
   }
 ]

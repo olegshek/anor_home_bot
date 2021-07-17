@@ -110,7 +110,7 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
     project_object = await getattr(transaction, project_model)
     project = await project_object.project
 
-    message = f'<b>{project.name}\n'
+    message = f'<b>{await messages.get_message("project", locale)} {project.name}\n'
 
     if project_type != 'commercial':
         room_quantity_message = await messages.get_message('room_quantity_info', locale)
@@ -123,7 +123,7 @@ async def send_cart_menu(user_id, message_id, locale, state, transaction_id=None
         duplex_name = getattr(await Button.get(code='duplex'), f'text_{locale}')
         message += f'{duplex_name}</b>\n\n'
     else:
-        message += await messages.get_message('square', locale) + f'{project_object.square} м2</b>\n\n'
+        message += await messages.get_message('square', locale) + f' {project_object.square} м2</b>\n\n'
 
     if transaction_model != DuplexTransaction:
         message += f'{getattr(project_object, f"description_{locale}")}'
@@ -245,7 +245,7 @@ async def process_cart_reply_menu(message, locale, state):
             project_object = await getattr(transaction, project_model)
             project = await project_object.project
 
-            message += f'<b>{count + 1}. {project.name}\n'
+            message = f'<b>{await messages.get_message("project", locale)} {project.name}\n'
 
             if project_type != 'commercial':
                 room_quantity_message = await messages.get_message('room_quantity_info', locale)
@@ -258,7 +258,7 @@ async def process_cart_reply_menu(message, locale, state):
                 duplex_name = getattr(await Button.get(code='duplex'), f'text_{locale}')
                 message += f'{duplex_name}</b>\n\n'
             else:
-                message += await messages.get_message('square', locale) + f'{project_object.square} м2</b>\n\n'
+                message += await messages.get_message('square', locale) + f' {project_object.square} м2</b>\n\n'
 
         keyboard = await keyboards.confirmation(locale)
 

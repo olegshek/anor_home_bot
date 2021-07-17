@@ -183,7 +183,7 @@ async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, l
     duplex_number = duplex_ids.index(duplex.id) + 1
     duplexes_quantity = len(duplex_ids)
 
-    message = f'<b>{apartment.square} м2</b>\n\n' \
+    message = f'<b>{await messages.get_message("square", locale)}</b> {apartment.square} м2\n\n' \
               f'{getattr(apartment, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(apartment.id, locale, added_duplexes, duplexes_quantity,
                                                    duplex_number, True, apartment.floor_number)
