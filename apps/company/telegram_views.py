@@ -101,7 +101,7 @@ async def anorhome_menu(message, locale, state):
         await CompanyForm.vacancies.set()
 
 
-@dp.callback_query_handler(choose_button, state=CompanyForm.services.state)
+@dp.callback_query_handler(choose_button, state=[CompanyForm.services.state, CompanyForm.service_detail.state])
 async def choose_service(query, locale, state):
     user_id = query.from_user.id
     message_id = query.message.message_id
