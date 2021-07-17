@@ -133,7 +133,7 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     project_ids = await project_objects.values_list('id', flat=True)
     project_number = project_ids.index(project_object.id) + 1
     projects_quantity = len(project_ids)
-    message = f'<b>{await messages.get_message("square", locale)}{project_object.square} м2</b>\n\n' \
+    message = f'<b>{await messages.get_message("square", locale)} {project_object.square} м2</b>\n\n' \
               f'{getattr(project_object, f"description_{locale}")}'
     keyboard = await keyboards.project_object_menu(project_object.id, locale, added_objects, projects_quantity,
                                                    project_number)
