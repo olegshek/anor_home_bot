@@ -182,7 +182,7 @@ async def cart(message, locale, state):
     await send_cart_menu(user_id, message.message_id, locale, state)
 
 
-@dp.callback_query_handler(callback_filters.is_switch, state=LeadForm.cart.state)
+@dp.callback_query_handler(callback_filters.is_switch, state=[LeadForm.cart.state, LeadForm.lead_confirmation.state])
 async def switch_cart(query, locale, state):
     user_id = query.from_user.id
     data = query.data.split(';')
@@ -245,7 +245,7 @@ async def process_cart_reply_menu(message, locale, state):
             project_object = await getattr(transaction, project_model)
             project = await project_object.project
 
-            message = f'<b>{await messages.get_message("project", locale)} {project.name}\n'
+            message += f'<b>{await messages.get_message("project", locale)} {project.name}\n'
 
             if project_type != 'commercial':
                 room_quantity_message = await messages.get_message('room_quantity_info', locale)
