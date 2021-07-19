@@ -91,8 +91,10 @@ async def send_project_object(user_id, message_id, locale, state, object_id=None
     transaction_model = ApartmentTransaction if project_type == 'residential' else StoreTransaction
     transaction__object_field_name = 'apartment_id' if project_type == 'residential' else 'store_id'
 
-    added_objects = await transaction_model.filter(lead_id__isnull=True).values_list(transaction__object_field_name,
-                                                                                     flat=True)
+    added_objects = await transaction_model.filter(lead_id__isnull=True, customer_id=user_id).values_list(
+        transaction__object_field_name,
+        flat=True
+    )
 
     project_objects = object_model.filter(
         project__id=project_id,
@@ -177,7 +179,8 @@ async def send_duplex(user_id, message_id, project_id, locale, duplex_id=None, l
     if not apartment:
         return
 
-    added_duplexes = await DuplexTransaction.filter(lead_id__isnull=True).values_list('duplex_id', flat=True)
+    added_duplexes = await DuplexTransaction.filter(lead_id__isnull=True, customer_id=user_id).values_list('duplex_id',
+                                                                                                           flat=True)
 
     duplex_ids = list(await Duplex.filter(project_id=project_id).order_by('room_quantity').values_list('id', flat=True))
     duplex_number = duplex_ids.index(duplex.id) + 1
