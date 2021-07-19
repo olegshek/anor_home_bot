@@ -10,6 +10,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel('INFO')
 
-bot = Bot(token=settings.TELEGRAM_TOKEN)
+bot = Bot(token=settings.TELEGRAM_TOKEN, parse_mode='HTML')
 storage = RedisStorage2(settings.REDIS_HOST, db=5, password=settings.REDIS_PASSWORD)
 dispatcher = Dispatcher(bot, storage=storage)
