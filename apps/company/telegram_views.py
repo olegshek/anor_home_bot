@@ -134,7 +134,7 @@ async def choose_service(query, locale, state):
         await CompanyForm.service_detail.set()
 
 
-@dp.callback_query_handler(choose_button, state=CompanyForm.vacancies.state)
+@dp.callback_query_handler(choose_button, state=[CompanyForm.vacancies.state, CompanyForm.vacancy_detail.state])
 async def choose_vacancy(query, locale, state):
     user_id = query.from_user.id
     message_id = query.message.message_id
